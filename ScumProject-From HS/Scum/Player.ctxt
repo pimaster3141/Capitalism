@@ -1,0 +1,17 @@
+#BlueJ class context
+comment0.target=void\ reset()
+comment1.target=String\ getName()
+comment10.target=int\ findIndexMax()
+comment2.target=int\ getRank()
+comment3.params=n
+comment3.target=void\ setRank(int)
+comment4.target=ArrayList<ScumCard>\ getHand()
+comment5.params=card
+comment5.target=void\ addCard(ScumCard)
+comment6.params=numCards
+comment6.target=ArrayList<ScumCard>\ getMove(int)
+comment7.target=boolean\ isDone()
+comment8.params=c
+comment8.target=void\ removeCard(ScumCard)
+comment9.target=int\ findIndexMin()
+numComments=11

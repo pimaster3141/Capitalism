@@ -1,0 +1,9 @@
+#BlueJ class context
+comment0.params=x\ y\ n
+comment0.target=TestObject(int,\ int,\ String)
+comment1.target=int\ get1()
+comment2.target=int\ get2()
+comment3.target=String\ getString()
+comment4.target=void\ increment()
+comment5.target=String\ toString()
+numComments=6

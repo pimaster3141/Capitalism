@@ -1,0 +1,24 @@
+#BlueJ class context
+comment0.params=n\ g
+comment0.target=HumanPlayer(String,\ ScumGame)
+comment1.target=void\ reset()
+comment10.target=void\ displayLastMove()
+comment11.target=int\ makeMove()
+comment12.params=c
+comment12.target=void\ removeCard(ScumCard)
+comment13.target=String\ toString()
+comment14.target=int\ findIndexMax()
+comment15.target=int\ findIndexMin()
+comment2.target=boolean\ isDone()
+comment3.target=String\ getName()
+comment4.target=int\ getRank()
+comment5.target=ArrayList<ScumCard>\ getHand()
+comment6.params=n
+comment6.target=void\ setRank(int)
+comment7.params=card
+comment7.target=void\ addCard(ScumCard)
+comment8.params=cardsNeeded
+comment8.target=ArrayList<ScumCard>\ getMove(int)
+comment8.text=cards\ needed\ \=\ the\ expected\ number\ of\ cards\ to\ return\ (0\ if\ player\ can\ choose\ how\ many\ to\ return)\nif\ returns\ null,\ player\ skips\ turn\n\n
+comment9.target=void\ displayHand()
+numComments=16

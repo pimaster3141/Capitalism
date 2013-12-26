@@ -1,0 +1,61 @@
+5/10 - Added files to Scum directory (Jason)
+
+5/10 - Created new directory "Sockets" in Scum
+ Uploaded Client and Server code samples to Sockets
+ Recommend organizing Scum folder into subfolders
+ (Eric)
+5/10 - Moved all card.png's to 'Cards\' AND edited Card.java to reflect filesystem changes. (Jason)
+
+5/11 - reset entire server deleteing all the files - thankfully there was a backup (Jason)
+5/11 - commented the card, deck, player, humanplayer and ScumGame classes. also set up basic setup for a human player and started the scumGame class (Jason)
+
+5/12 - modified the player implementation to allow multiple card plays using arrayList for the getMove method, also changed humanPlayer to reflect chages
+	continued writing the ScumGame class, proposing to remove Scum class? (jason)
+
+5/13 - fixed the HumanPlayer class to properlly implement multiple card plays as well as support for initially playing multiple cards (see method comments)
+     - continued working on ScumGame class (incomplete) (jason)
+
+5/14 - Initial write of ScumGame class, now compiles properly but still needs to be TESTED. anyone wanna help here?
+	inital writing does not take into account 2 high (yet) 
+	also, lots of messy and redundant code in ScumGame class -- will be cleaned soon
+	(jason)
+
+5/17 - removed some redundant code in humanPlayer (jason)
+	created a new card class 'ScumCard' to implement 2 high
+		fixed everything to reflect changes above
+	created a new deck class to handle scum cards. 
+	
+       added the shell GUI (MainGUI) and a ColorApp class (christian)
+	
+	cleaned code in Scum game (now it might work properly) (jason)
+	
+	rewrote the computer player to use ScumCards and rewrote the player interface's remove method to use ScumCards as well. also rewrote humanplayer's remove method so it uses ScumCards instead of Cards. (eric)
+	
+	had issues with implementation of the ScumCard class as it was written. various issues arose because of the fact that it extended the Card class, so i have uploaded the original ScumCard to the server as 
+	ScumCardOrig.java and have written a new version of ScumCard.java that is a merger of Card and ScumCard, and it is a standalone class now. (eric)
+
+5/20 - finally fixed all logic errors in scumGame and HumanPlayer 
+	- also fixed scumCard and added more accessor methods
+	- added a field and accessor to find exactly what the last legal card play was
+		see comments for details --- yeah ill comment it later.....
+	*** proposing change in player creation: ***
+		player (both human and computer) will be constructed with a name parameter and game
+		player can then gain access to vital game info via game acessor methods
+	*note - game now playable using humans, non-networked, via text based. 
+	- copying and removing unused classes (these will be moved to a new directory in '/')(jason)
+	
+5/21 - uploaded version one of the computer player code. this code should be in a working state so that it can finally be tested with the rest of the game. however, i have not made changes to the constructor yet to accomodate constructing with a game parameter rather than a discard parameter... didn't know if that needed to be implemented yet. files included are ComputerPlayer.java and AIStack.java.  DO NOT MODIFY THESE FILES UNDER ANY CIRCUMSTANCES WITHOUT ASKING ME. most of it is not commented fully yet. (eric)
+
+5/22 - minor fixes in human player/scumGame
+	-- problem in computer player - boolean done is not updated
+		if computer player plays first (on an empty discard) possible infinite loop (jason)
+		
+5/23 - fixed the bugs in the computerplayer code and made one slight change to the AIStack.  however, still having an issue with a nullpointer exception occurring within ScumGame after a few turns have been played. (eric)
+
+5/24 - finally fixed the nullpointer exception between the scumgame and ai i think. needs to be tested in a real game setting however. (eric)
+	Game now playable completely via text; have not found any errors yet (jason)
+	
+5/25 - re-uploaded the networking examples into the sockets folder. these examples use two-way communication between server and client. (eric)
+
+5/26 - attempted to make a small test program to send a simple object over the network -- not working
+	funny how it works with strings and not user defined objects.... annyone wanna help?? (see network test folder)(jason)

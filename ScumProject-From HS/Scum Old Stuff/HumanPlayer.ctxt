@@ -1,0 +1,26 @@
+#BlueJ class context
+comment0.params=n\ g
+comment0.target=HumanPlayer(java.lang.String,\ ScumGame)
+comment1.params=
+comment1.target=void\ reset()
+comment10.params=
+comment10.target=int\ findIndexMax()
+comment11.params=
+comment11.target=int\ findIndexMin()
+comment2.params=
+comment2.target=boolean\ isDone()
+comment3.params=
+comment3.target=java.lang.String\ getName()
+comment4.params=
+comment4.target=int\ getRank()
+comment5.params=n
+comment5.target=void\ setRank(int)
+comment6.params=
+comment6.target=void\ displayHand()
+comment7.params=
+comment7.target=void\ displayLastMove()
+comment8.params=
+comment8.target=int\ makeMove()
+comment9.params=
+comment9.target=java.lang.String\ toString()
+numComments=12

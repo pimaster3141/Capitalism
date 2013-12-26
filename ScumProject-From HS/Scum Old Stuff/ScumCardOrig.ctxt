@@ -1,0 +1,12 @@
+#BlueJ class context
+comment0.params=s\ r
+comment0.target=ScumCardOrig(int,\ int)
+comment1.params=
+comment1.target=int\ getRank()
+comment2.params=
+comment2.target=int\ getCardNumber()
+comment3.params=other
+comment3.target=int\ compareTo(java.lang.Object)
+comment4.params=other
+comment4.target=int\ compareToIgnoreSuit(java.lang.Object)
+numComments=5

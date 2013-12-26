@@ -1,0 +1,26 @@
+#BlueJ class context
+comment0.params=s\ r
+comment0.target=Card(int,\ int)
+comment1.params=
+comment1.target=int\ getSuit()
+comment10.params=other
+comment10.target=int\ compareTo(java.lang.Object)
+comment11.params=other
+comment11.target=int\ compareToIgnoreSuit(java.lang.Object)
+comment2.params=
+comment2.target=int\ getRank()
+comment3.params=
+comment3.target=int\ getCardNumber()
+comment4.params=
+comment4.target=javax.swing.Icon\ getImage()
+comment5.params=
+comment5.target=javax.swing.Icon\ getBack()
+comment6.params=
+comment6.target=boolean\ isFaceUp()
+comment7.params=
+comment7.target=void\ flipCard()
+comment8.params=
+comment8.target=java.lang.String\ toString()
+comment9.params=other
+comment9.target=boolean\ equals(java.lang.Object)
+numComments=12

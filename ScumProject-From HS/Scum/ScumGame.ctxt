@@ -1,0 +1,24 @@
+#BlueJ class context
+comment0.params=p\ numDecks
+comment0.target=ScumGame(ArrayList<Player>,\ int)
+comment1.target=void\ reset()
+comment10.target=int\ findViceScum()
+comment11.target=int\ findScum()
+comment12.params=recieve\ send
+comment12.target=void\ trade(Player,\ Player)
+comment13.target=void\ setupRound()
+comment14.params=c
+comment14.target=boolean\ isValid(ArrayList<ScumCard>)
+comment15.target=void\ clearDiscard()
+comment16.params=p
+comment16.target=void\ setRank(Player)
+comment17.target=void\ playScum()
+comment2.target=void\ deal()
+comment3.target=boolean\ isDone()
+comment4.target=ArrayList<ScumCard>\ getLastMove()
+comment5.target=ArrayList<Player>\ getPlayers()
+comment6.target=ArrayList<ScumCard>\ getDiscardPile()
+comment7.target=int\ findThreeClubs()
+comment8.target=int\ findPresident()
+comment9.target=int\ findVice()
+numComments=18

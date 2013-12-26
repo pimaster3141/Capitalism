@@ -1,0 +1,26 @@
+#BlueJ class context
+comment0.params=n\ d
+comment0.target=ComputerPlayer(java.lang.String,\ java.util.ArrayList)
+comment1.params=
+comment1.target=void\ reset()
+comment10.params=
+comment10.target=int\ findIndexMax()
+comment11.params=
+comment11.target=int\ findIndexMin()
+comment2.params=
+comment2.target=java.lang.String\ getName()
+comment3.params=
+comment3.target=int\ getRank()
+comment4.params=n
+comment4.target=void\ setRank(int)
+comment5.params=
+comment5.target=java.util.ArrayList\ getHand()
+comment6.params=card
+comment6.target=void\ addCard(ScumCard)
+comment7.params=numCards
+comment7.target=java.util.ArrayList\ getMove(int)
+comment8.params=
+comment8.target=boolean\ isDone()
+comment9.params=c
+comment9.target=void\ removeCard(ScumCard)
+numComments=12

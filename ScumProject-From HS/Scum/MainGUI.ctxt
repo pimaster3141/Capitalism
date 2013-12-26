@@ -1,0 +1,27 @@
+#BlueJ class context
+comment0.params=
+comment0.target=MainGUI()
+comment0.text=Creates\ new\ form\ MainGUI
+comment1.params=
+comment1.target=void\ initComponents()
+comment10.params=
+comment10.target=void\ run()
+comment2.params=evt
+comment2.target=void\ actionPerformed(java.awt.event.ActionEvent)
+comment3.params=evt
+comment3.target=void\ jButton1ActionPerformed(java.awt.event.ActionEvent)
+comment4.params=imgName
+comment4.target=javax.swing.ImageIcon\ reverse(java.lang.String)
+comment5.params=img
+comment5.target=javax.swing.ImageIcon\ reverse(javax.swing.Icon)
+comment6.params=img
+comment6.target=javax.swing.ImageIcon\ reverse(java.awt.Image)
+comment7.params=image
+comment7.target=java.awt.image.BufferedImage\ toBufferedImage(java.awt.Image)
+comment7.text=\n\ @author\ alpha02\n
+comment8.params=image
+comment8.target=boolean\ hasAlpha(java.awt.Image)
+comment8.text=\n\ @author\ alpha02\n
+comment9.params=args
+comment9.target=void\ main(java.lang.String[])
+numComments=11

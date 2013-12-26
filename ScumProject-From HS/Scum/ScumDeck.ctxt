@@ -1,0 +1,18 @@
+#BlueJ class context
+comment0.target=ScumDeck()
+comment1.params=suit\ rank
+comment1.target=boolean\ remove(int,\ int)
+comment10.target=void\ clear()
+comment11.target=String\ toString()
+comment2.params=c
+comment2.target=boolean\ remove(ScumCard)
+comment3.target=void\ shuffle()
+comment4.target=int\ getSize()
+comment5.target=ArrayList<ScumCard>\ getDeck()
+comment6.target=ScumCard\ deal()
+comment7.params=card
+comment7.target=boolean\ add(ScumCard)
+comment8.params=i\ card
+comment8.target=void\ add(int,\ ScumCard)
+comment9.target=void\ sort()
+numComments=12

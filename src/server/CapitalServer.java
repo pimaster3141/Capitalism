@@ -12,8 +12,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import client.User;
-
 /**
  * Server for Capitalism game
  *
@@ -63,10 +61,7 @@ public class CapitalServer {
             socket.close();
         }
     }
-    
-
-    
-    
+        
     /**
      * Run the server, listening for client connections and handling them.
      * Never returns unless an exception is thrown.
@@ -94,11 +89,8 @@ public class CapitalServer {
     }
     
     /**
-     * Start a CapitalServer running on the specified port, with either a random new board or a
-     * board loaded from a file. Either the file or the size argument must be null, but not both.
+     * Start a CapitalServer running on the specified port.
      * 
-     * @param debug The server should disconnect a client after a BOOM message if and only if this
-     *              argument is false.
      * @param port The network port on which the server should listen.
      */
     public static void runServer(int port) throws IOException {

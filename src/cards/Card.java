@@ -1,4 +1,4 @@
-package server;
+package cards;
 
 public class Card
 {

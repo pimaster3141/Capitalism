@@ -12,6 +12,9 @@ import java.util.Queue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import player.HumanPlayer;
+import player.Player;
+
 /**
  * Server for Capitalism game
  * 

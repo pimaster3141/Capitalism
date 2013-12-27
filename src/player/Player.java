@@ -1,6 +1,10 @@
-package server;
+package player;
+
+import game.Game;
 
 import java.util.ArrayList;
+
+import cards.Card;
 
 /**
  * 

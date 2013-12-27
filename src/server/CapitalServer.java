@@ -12,6 +12,8 @@ import java.util.Queue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import lists.GameList;
+import lists.ServerUserList;
 import player.HumanPlayer;
 import player.Player;
 
@@ -22,8 +24,8 @@ import player.Player;
 public class CapitalServer
 {
 	private final ServerSocket serverSocket;
-	//TODO private final RoomList rooms;
-	//TODO private final UserList users;
+	private final GameList games;
+	private final ServerUserList users;
 
 	/**
 	 * Make a CapitalServer that listens for connections on port.
@@ -34,6 +36,8 @@ public class CapitalServer
 	public CapitalServer(int port) throws IOException
 	{
 		this.serverSocket = new ServerSocket(port);
+		this.users = new ServerUserList();
+		this.games = new GameList(users);
 	}
 
 	/**

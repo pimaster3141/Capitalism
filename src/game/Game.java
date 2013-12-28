@@ -11,10 +11,10 @@ import player.Player;
 
 /**
  * Class implementing a 'game' of Capitalism 
- * Game is self contained, can start and stop itself 
+ * Game is a self contained thread, can start and stop itself 
  *
  */
-public class Game implements Runnable
+public class Game extends Thread
 {
 	public final String name;		//name of game
 	private GameList games;			//pointer to list of games
@@ -22,7 +22,6 @@ public class Game implements Runnable
 	private final int numDecks;		//number of decks to play with 
 	private int numPlayers;			//number of players to be expecting
 	private LinkedBlockingQueue<Move> moveQueue = new LinkedBlockingQueue<Move>();	//queue to allow non sequential moves
-	private Thread self;			//reference to self 
 	private boolean alive = true;	//boolean if the game is still going
 	
 	/*
@@ -50,9 +49,8 @@ public class Game implements Runnable
 			games.add(this);
 			creator.updateQueue("Someting to say they created a room");
 			players.add(creator);
-			self = new Thread(this);
-			self.start();
 		}
+		this.start();
 	}
 	
 	/*
@@ -92,7 +90,7 @@ public class Game implements Runnable
 			if(players.size() <= 0)
 			{
 				alive = false;
-				self.interrupt();
+				this.interrupt();
 			}
 		}
 	}
@@ -114,16 +112,6 @@ public class Game implements Runnable
 	public void queueMove(Move move)
 	{
 		moveQueue.add(move);
-	}
-	
-	/*
-	 * returns if this game is still alive (does not check if the game is still being played)
-	 * @return
-	 * 	boolean - if the game is still alive
-	 */
-	public boolean isAlive()
-	{
-		return this.self.isAlive();
 	}
 	
 	/*

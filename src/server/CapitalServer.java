@@ -80,7 +80,7 @@ public class CapitalServer
 								throw new IOException("Client input not in the format 'connect [username]'");
 							Player player = new HumanPlayer(clientSocket, input.substring(input.indexOf(' ') + 1));
 							System.err.println("adding User");
-							//users.add(player);
+							users.add(player);
 							new Thread(player).start();
 						}
 						catch (IOException e)

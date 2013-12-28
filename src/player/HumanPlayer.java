@@ -131,7 +131,8 @@ public class HumanPlayer extends Player
 	 * adds the string to a buffer to be consumed when ready. this frees the
 	 * sender to do other things and not wait for a slow connection.
 	 * 
-	 * @param String - message to be sent to the client
+	 * @param
+	 *  String - message to be sent to the client
 	 */
 	public void  updateQueue(String info)
 	{

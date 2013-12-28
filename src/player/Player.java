@@ -25,7 +25,8 @@ public abstract class Player implements Runnable
 	
 	/*
 	 * Generic constructor, initialize fields
-	 * @param String - the name of the player
+	 * @param
+	 *  String - the name of the player
 	 */
 	public Player(String name)
 	{
@@ -44,7 +45,8 @@ public abstract class Player implements Runnable
 	
 	/*
 	 * Returns the name of the player
-	 * @return String - the name of the player
+	 * @return
+	 *  String - the name of the player
 	 */
 	public String getName()
 	{
@@ -53,7 +55,8 @@ public abstract class Player implements Runnable
 	
 	/*
 	 * Returns the rank of the player
-	 * @return int - the rank of the player (-2,-1,0,+1,+2)
+	 * @return
+	 *  int - the rank of the player (-2,-1,0,+1,+2)
 	 */
 	public int getRank()
 	{
@@ -62,7 +65,8 @@ public abstract class Player implements Runnable
 	
 	/*
 	 * Sets the players rank
-	 * @param int - the rank of the player (-2,-1,0,+1,+2)
+	 * @param
+	 *  int - the rank of the player (-2,-1,0,+1,+2)
 	 */
 	public void setRank(int rank)
 	{
@@ -71,7 +75,8 @@ public abstract class Player implements Runnable
 	
 	/*
 	 * Adds a card to the players hand
-	 * @param Card - card to be added to the hand
+	 * @param
+	 *  Card - card to be added to the hand
 	 */
 	public void addCard(Card card)
 	{
@@ -80,7 +85,8 @@ public abstract class Player implements Runnable
 	
 	/*
 	 * Returns a shallow copy of the players hand
-	 * @param ArrayList<Card> - Copy of hand
+	 * @param
+	 *  ArrayList<Card> - Copy of hand
 	 */
 	public ArrayList<Card> getHand()
 	{
@@ -92,4 +98,10 @@ public abstract class Player implements Runnable
 	 * move should push a particular move to the Game game's input queue to be processed
 	 */
 	public abstract void makeMove();	
+	
+	/*
+	 * signature for update queue
+	 * feedback from game or server(lists) to update state
+	 */
+	public abstract void updateQueue(String info);
 }

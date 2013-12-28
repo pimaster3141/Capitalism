@@ -5,7 +5,7 @@ package cards;
  * Immutable. 
  *
  */
-public class Card
+public class Card implements Comparable<Card>
 {
     /**
      * Enum type for defining the four suits of a card 
@@ -69,7 +69,7 @@ public class Card
         return this.suit.equals(card2.suit) && this.number==card2.number;
     }
     
-    public int compareTo(Object other){
+    public int compareTo(Card other){
         //TODO
         return -1;
     }

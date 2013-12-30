@@ -23,6 +23,8 @@ public class Game extends Thread
 	private int numPlayers;			//number of players to be expecting
 	private LinkedBlockingQueue<Move> moveQueue = new LinkedBlockingQueue<Move>();	//queue to allow non sequential moves
 	private boolean alive = true;	//boolean if the game is still going
+	private Move lastMove=null; //can't count passes
+	private Player playerTurn;
 	
 	/*
 	 * constructor for game - will attempt to adde self to game listing,
@@ -107,23 +109,28 @@ public class Game extends Thread
 	/*
 	 * method to allow players to submit moves to the queue
 	 * @param
-	 * 	Move - move to be sumitted (and then consumed and see if its spat out)
+	 * 	Move - move to be submitted (and then consumed and see if its spat out)
 	 */
 	public void queueMove(Move move)
 	{
 		moveQueue.add(move);
 	}
 	
-	/*
+	/**
 	 * helper method to validate if a move is valid
 	 * @param
-	 * 	Move - move to be tested
+	 * 	Move - move to be tested against lastMove
 	 * @return
 	 * 	boolean - is the move good to go?
 	 */
 	private boolean isValidMove(Move move) // need to logic somewhere....
 	{
-		return false;
+		//normal turn
+		if (move.getPlayer().equals(playerTurn)){
+			return move.compareTo(lastMove)>0;
+		}
+		//spam case: not the player's turn
+		return move.compareTo(lastMove)==0;
 	}
 	
 	public void run()

@@ -1,13 +1,18 @@
 package player;
 
+import game.Move;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import cards.Card;
 
 public class HumanPlayer extends Player
 {
@@ -17,6 +22,7 @@ public class HumanPlayer extends Player
 	private final LinkedBlockingQueue<String> outputBuffer = new LinkedBlockingQueue<String>();
 	private final Thread outputConsumer;
 	private boolean alive = true;
+	private final ArrayList<Move> movesToGame= new ArrayList<Move>();//TODO switch to queue?
 	
 	public HumanPlayer(Socket socket, String username) throws IOException
 	{
@@ -120,7 +126,7 @@ public class HumanPlayer extends Player
 	{
 		if (output.equals(""))
 			return;
-		System.out.println("Client: " + name + " - seinding - " + output);
+		System.out.println("Client: " + name + " - sending - " + output);
 		out.println(output);
 		out.flush();
 		return;
@@ -139,10 +145,23 @@ public class HumanPlayer extends Player
 		outputBuffer.add(info);
 	}
 
+	/**
+	 * Plays the cards of the user as a "move", will be in queue of moves to push to server?
+	 * @param cards
+	 */
+	public void playCards(ArrayList<Card> cards){
+		Move x= new Move(this, cards);
+		movesToGame.add(x);
+	}
+	
+	/*
+	 * will push a particular move to the Game game's input queue to be processed
+	 */
 	public void makeMove()
 	{
-		// TODO Auto-generated method stub
-		
+		// TODO check
+		this.game.queueMove(movesToGame.remove(0));//or if we switch to a queue, movesToGame.pop()
 	}
+		
 
 }

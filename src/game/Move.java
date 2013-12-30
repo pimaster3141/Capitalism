@@ -6,9 +6,10 @@ import cards.Card;
 import player.Player;
 
 /**
- * Object representing a 'move' becasue objects are much easier to deal with than strings 
+ * Object representing a 'move' because objects are much easier to deal with than strings 
  * contains helper methods to compare different moves and classify the type of move 
  *
+ * A move is a player playing down one or more cards. 
  * moves are immutable
  */
 public class Move implements Comparable<Move>

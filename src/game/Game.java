@@ -4,10 +4,13 @@ import lists.GameList;
 import lists.GameUserList;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import player.HumanPlayer;
 import player.Player;
+import cards.Card;
 
 /**
  * Class implementing a 'game' of Capitalism 
@@ -20,11 +23,14 @@ public class Game extends Thread
 	private GameList games;			//pointer to list of games
 	private GameUserList players;	//players in game
 	private final int numDecks;		//number of decks to play with 
-	private int numPlayers;			//number of players to be expecting
+	private final int numPlayers;			//number of players to be expecting
 	private LinkedBlockingQueue<Move> moveQueue = new LinkedBlockingQueue<Move>();	//queue to allow non sequential moves
 	private boolean alive = true;	//boolean if the game is still going
 	private Move lastMove=null; //can't count passes
-	private Player playerTurn;
+	private Player playerTurn; //player whose turn it currently is (can't make this an index unless we change GameUserList)
+	private final Card START_CARD = new Card("club", 3);
+	private ArrayList<Card> pile= new ArrayList<Card>();
+	private AtomicInteger consecPasses=new AtomicInteger(0);
 	
 	/*
 	 * constructor for game - will attempt to adde self to game listing,
@@ -117,26 +123,79 @@ public class Game extends Thread
 	}
 	
 	/**
-	 * helper method to validate if a move is valid
+	 * helper method to validate if a move is valid only on normal turn
 	 * @param
 	 * 	Move - move to be tested against lastMove
 	 * @return
 	 * 	boolean - is the move good to go?
 	 */
-	private boolean isValidMove(Move move) // need to logic somewhere....
+	private boolean isValidOnTurn(Move move)
 	{
 		//normal turn
 		if (move.getPlayer().equals(playerTurn)){
 			return move.compareTo(lastMove)>0;
 		}
+		return false;
+	}
+	
+	private boolean isValidSpam(Move move){
 		//spam case: not the player's turn
 		return move.compareTo(lastMove)==0;
 	}
-	
+
+	//TODO fix. don't run yet
 	public void run()
 	{
 		//stuff to accept players, init mainloop, and trading
-		
+		while (this.players.size()<this.numPlayers){
+			HumanPlayer newPlayer;
+			try {
+				//accept new players, block on join requests
+				newPlayer = new HumanPlayer(null, "Divya");
+				this.addUser(newPlayer);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		//Game is in session. Whoever has START_CARD must play?
+		this.players.setCounter(null);//player with START_CARD
+		while (true){
+			playerTurn=this.players.getCurrentPlayer();
+			try {
+				//Blocks until receiving a move
+				Move m= moveQueue.take();
+				//Normal turn
+				if (this.isValidOnTurn(m)){
+					if (m.getCards().size()==0){//move is a pass
+						consecPasses.incrementAndGet();
+					}
+					else{//non-pass: play cards and store move
+						pile.addAll(m.getCards());
+						lastMove=m;
+					}
+					//clear pile if >=2 consecutive passes
+					if (consecPasses.compareAndSet(2, 0))    
+						pile.clear();
+				}
+				//Spam case
+				else if (this.isValidSpam(m)){
+					//can't be a pass
+					pile.addAll(m.getCards());
+					lastMove=m;
+					this.players.setCounter(m.getPlayer());
+					//assuming it really was a spam
+					pile.clear();
+					consecPasses.set(0);
+				}
+				//Iterate to next person
+				this.players.incrementPlayer();
+
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}			
+		}
 	}
 
 }

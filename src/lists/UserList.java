@@ -14,7 +14,7 @@ import player.Player;
  */
 public abstract class UserList
 {
-	private Map<String, Player> players;
+	protected Map<String, Player> players;
 	
 	/*
 	 * constructor to init list

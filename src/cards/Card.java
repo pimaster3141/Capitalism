@@ -61,6 +61,19 @@ public class Card implements Comparable<Card>
     }
     
     /**
+     * Converts number to rank
+     * Ranks: 2 > A(1) > K(13) > Q(12) > J(11) > 10 > 9 > ... > 4 > 3,
+     *  with 3 as lowest?
+     * Convert so rank(3) = 0, rank(2)=12
+     * right now K>Q>J...>2>A. 13>12>...>1. 
+     * TODO Please change if I'm wrong (I used Wikipedia)
+     * @return rank as so eloquently described above
+     */
+    public int getRank(){
+    	return (this.getNumber()+10) % 13;
+    }
+    
+    /**
      * Equality test between cards. Assumes other object is not null. 
      */
     public boolean equals(Object other){
@@ -69,9 +82,16 @@ public class Card implements Comparable<Card>
         return this.suit.equals(card2.suit) && this.number==card2.number;
     }
     
+    /**
+     * Compares two cards, this and other. 
+     * If this > other, return a positive integer
+     * If this = other, return 0
+     * If this < other, return a negative integer
+     * TODO I believe it's only based on the number (converted to rank), 
+     * suit being irrelevant. 
+     */
     public int compareTo(Card other){
-        //TODO
-        return -1;
+        return this.getRank()-other.getRank();
     }
     
     public String numberToString(){

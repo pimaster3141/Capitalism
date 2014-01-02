@@ -11,6 +11,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import player.HumanPlayer;
 import player.Player;
 import cards.Card;
+import cards.Deck;
 
 /**
  * Class implementing a 'game' of Capitalism 
@@ -22,7 +23,7 @@ public class Game extends Thread
 	public final String name;		//name of game
 	private GameList games;			//pointer to list of games
 	private GameUserList players;	//players in game
-	private final int numDecks;		//number of decks to play with 
+	private int numDecks;		//number of decks to play with 
 	private final int numPlayers;			//number of players to be expecting
 	private LinkedBlockingQueue<Move> moveQueue = new LinkedBlockingQueue<Move>();	//queue to allow non sequential moves
 	private boolean alive = true;	//boolean if the game is still going
@@ -33,6 +34,7 @@ public class Game extends Thread
 	private AtomicInteger consecPasses=new AtomicInteger(0);
 	private ArrayList<Player> hierarchy= new ArrayList<Player>();
 	private final int CLEAR_RANK=2;
+	private Deck deck;
 	
 	/*
 	 * constructor for game - will attempt to adde self to game listing,
@@ -51,7 +53,14 @@ public class Game extends Thread
 		this.name = name;
 		this.games = games;
 		this.numPlayers = numHuman;
-		this.numDecks = numDecks;
+		
+        try {
+            this.deck= new Deck(numDecks);
+            this.numDecks = numDecks;
+        } catch (Exception e) {
+            this.deck= new Deck();
+            this.numDecks=1;
+        }
 		
 		this.players = new GameUserList();
 		synchronized(players)
@@ -60,6 +69,7 @@ public class Game extends Thread
 			creator.updateQueue("Someting to say they created a room");
 			players.add(creator);
 		}
+		
 		this.start();
 	}
 	
@@ -223,6 +233,19 @@ public class Game extends Thread
 	}
 	
 	/**
+	 * Distribute deck among all players of game
+	 */
+	private synchronized void distributeDeck(){
+        final int numCards=this.deck.divide(numPlayers);
+	    for (int i=0; i<this.numPlayers; i++){
+	        ArrayList<Card> hand= this.deck.dealCards(numCards);
+	        this.players.incrementAndGetPlayer().setHand(hand);
+	    }
+	}
+	
+	
+	
+	/**
 	 * Runs the Game, from accepting players to actually playing rounds of the game
 	 */
 	public void run()
@@ -238,6 +261,8 @@ public class Game extends Thread
 				e.printStackTrace();
 			}
 		}
+		//Give players cards from deck
+		this.distributeDeck();
 		//Game is in session. Whoever has START_CARD must play first
 		Player startPlayer= this.players.findPlayerWith(START_CARD);
 		this.players.setCounter(startPlayer);

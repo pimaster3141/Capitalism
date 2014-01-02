@@ -9,10 +9,10 @@ import player.Player;
  * Object representing a 'move' because objects are much easier to deal with than strings 
  * contains helper methods to compare different moves and classify the type of move 
  *
- * A move is a player playing down one or more cards. 
+ * A move is a player playing down zero or more cards. 
  * moves are immutable
  */
-public class Move implements Comparable<Move>
+public class Move //implements Comparable<Move>
 {
 	private final Player player;
 	private final ArrayList<Card> cards;
@@ -81,7 +81,6 @@ public class Move implements Comparable<Move>
 	public int compareTo(Move arg0)
 	{
 		//1. Normal turns: play at least as many cards as arg0
-		//optional player identity check: if (!this.getPlayer().equals(arg0.getPlayer())){
 		if (this.getCards().size()>=arg0.getCards().size()){
 			return this.getRank()-arg0.getRank();
 		}
@@ -90,5 +89,29 @@ public class Move implements Comparable<Move>
 		//failing this, is invalid
 		return -1;
 	}
+	
+	/**
+	 * Compares the number of cards in this and another move
+	 * @param arg0 the other move to compare to
+	 * @return
+	 *     positive integer if this has more cards than arg0
+	 *     0 if this has the same amount of cards as arg0
+	 *     negative integer if this has less cards than arg0
+	 */
+	public int compareSizeTo(Move arg0){
+	    return this.getCards().size()-arg0.getCards().size();
+	}
+	
+	   /**
+     * Compares the rank of cards cards in this and another move
+     * @param arg0 the other move to compare to
+     * @return
+     *     positive integer if this has a greater rank than arg0
+     *     0 if this has the same rank as arg0
+     *     negative integer if this has a smaller rank than arg0
+     */
+    public int compareRankTo(Move arg0){
+        return this.getRank()-arg0.getRank();
+    }
 
 }

@@ -32,6 +32,7 @@ public class Game extends Thread
 	private ArrayList<Card> pile= new ArrayList<Card>();
 	private AtomicInteger consecPasses=new AtomicInteger(0);
 	private ArrayList<Player> hierarchy= new ArrayList<Player>();
+	private final int CLEAR_RANK=2;
 	
 	/*
 	 * constructor for game - will attempt to adde self to game listing,
@@ -151,70 +152,108 @@ public class Game extends Thread
 	 * @param
 	 * 	Move - move to be tested against lastMove
 	 * @return
-	 * 	boolean - is the move good to go?
+	 * 	boolean - is the move valid on a normal turn? 
+	 * Must be the player's turn to be true. 
+	 * Additionally, to be true, must have at least as many cards as 
+	 * the last move, and a strictly bigger rank.
+	 * Or can be a 2 of any size (clear the deck). 
 	 */
 	private boolean isValidOnTurn(Move move)
 	{
-		//normal turn
 		if (move.getPlayer().equals(playerTurn)){
-			return move.compareTo(lastMove)>0;
+		    //allow for passes
+		    if (move.getCards().isEmpty()) return true;
+		    //special ranks (ex. 2)
+		    if (move.getRank()==CLEAR_RANK){
+		        //valid regardless of size, but can't start a pile
+		        return (!pile.isEmpty());
+		    }
+		    //else follow standard conditions
+			return move.compareSizeTo(lastMove)>=0 && 
+			    move.compareRankTo(lastMove)>0;
 		}
+		//invalid if it's not the player's turn
 		return false;
 	}
 	
+	/**
+	 * Sees if a move is valid in spam case
+	 * @param move
+	 * @return
+	 *  true if it completes the previous rank
+	 *  false otherwise
+	 */
 	private boolean isValidSpam(Move move){
-		//spam case: not the player's turn
-		return move.compareTo(lastMove)==0;
+	    //TODO verify that hand is actually completed
+		return move.compareRankTo(lastMove)==0;
 	}
 
-	//TODO fix. don't run yet
+	
+	/**
+	 * Handles normal turns, playing cards and storing the move
+	 * @param m Move that was played on turn (includes pass)
+	 */
+	private void doTurn(Move m){
+	    if (m.getCards().isEmpty()){//pass
+	        consecPasses.incrementAndGet();
+	        //clear pile if >=2 consecutive passes
+	        if (consecPasses.compareAndSet(2, 0)){
+	            pile.clear();
+	        }	        
+	    }
+	    else{//not a pass
+	        pile.addAll(m.getCards());
+	        lastMove=m;	        
+	    }
+        //Iterate to next person
+        this.players.incrementPlayer();
+	}
+
+	/**
+	 * Handles special spam case, clearing pile and resetting counters
+	 * @param m Spam move that was played
+	 */
+	private void doSpam(Move m){
+        pile.addAll(m.getCards());
+        lastMove=m;
+        //assuming it really was a spam
+        pile.clear();
+        consecPasses.set(0);
+        this.players.setCounter(m.getPlayer());
+	}
+	
+	/**
+	 * Runs the Game, from accepting players to actually playing rounds of the game
+	 */
 	public void run()
 	{
 		//stuff to accept players, init mainloop, and trading
 		while (this.players.size()<this.numPlayers){
 			HumanPlayer newPlayer;
 			try {
-				//accept new players, block on join requests
+				//TODO accept new players, block on join requests
 				newPlayer = new HumanPlayer(null, "Divya");
 				this.addUser(newPlayer);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
-		//Game is in session. Whoever has START_CARD must play?
-		this.players.setCounter(null);//player with START_CARD
+		//Game is in session. Whoever has START_CARD must play first
+		Player startPlayer= this.players.findPlayerWith(START_CARD);
+		this.players.setCounter(startPlayer);
 		while (true){
 			playerTurn=this.players.getCurrentPlayer();
 			try {
 				//Blocks until receiving a move
 				Move m= moveQueue.take();
-				//Normal turn
+				//Normal turn (includes passes)
 				if (this.isValidOnTurn(m)){
-					if (m.getCards().size()==0){//move is a pass
-						consecPasses.incrementAndGet();
-					}
-					else{//non-pass: play cards and store move
-						pile.addAll(m.getCards());
-						lastMove=m;
-					}
-					//clear pile if >=2 consecutive passes
-					if (consecPasses.compareAndSet(2, 0))    
-						pile.clear();
+					this.doTurn(m);
 				}
 				//Spam case
 				else if (this.isValidSpam(m)){
-					//can't be a pass
-					pile.addAll(m.getCards());
-					lastMove=m;
-					this.players.setCounter(m.getPlayer());
-					//assuming it really was a spam
-					pile.clear();
-					consecPasses.set(0);
+					this.doSpam(m);
 				}
-				//Iterate to next person
-				this.players.incrementPlayer();
-
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

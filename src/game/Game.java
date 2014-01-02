@@ -66,7 +66,7 @@ public class Game extends Thread
 	 * @param
 	 * 	HumanPlayer - player to be added
 	 * @Throws
-	 * 	IOException - if the player cannot be added - like if it is cheating and trying to join multple times 
+	 * 	IOException - if the player cannot be added - like if it is cheating and trying to join multiple times 
 	 */
 	public void addUser(HumanPlayer player) throws IOException
 	{

@@ -9,7 +9,7 @@ public class Card implements Comparable<Card>
 {
     /**
      * Enum type for defining the four suits of a card 
-     * (and the joker if you want). 
+     * (and the joker if you want).
      */
     public enum Suit{
         CLUB, DIAMOND, HEART, SPADE, JOKER

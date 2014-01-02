@@ -77,11 +77,11 @@ public class Move //implements Comparable<Move>
 	 *     0 if valid as spam
 	 *     positive integer if valid on normal turn
 	 *     negative integer in all other cases
-	 */
+	 
 	public int compareTo(Move arg0)
 	{
 		//1. Normal turns: play at least as many cards as arg0
-		if (this.getCards().size()>=arg0.getCards().size()){
+		if (this.compareSizeTo(arg0).getCards().size()>=arg0.getCards().size()){
 			return this.getRank()-arg0.getRank();
 		}
 		//2. Spams not caught in part 1: rank of this = rank of arg0. Leave game to do any other checks
@@ -89,6 +89,7 @@ public class Move //implements Comparable<Move>
 		//failing this, is invalid
 		return -1;
 	}
+	*/
 	
 	/**
 	 * Compares the number of cards in this and another move

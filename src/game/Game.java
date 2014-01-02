@@ -28,9 +28,10 @@ public class Game extends Thread
 	private boolean alive = true;	//boolean if the game is still going
 	private Move lastMove=null; //can't count passes
 	private Player playerTurn; //player whose turn it currently is (can't make this an index unless we change GameUserList)
-	private final Card START_CARD = new Card("club", 3);
+	private final Card START_CARD = new Card("diamond", 3);
 	private ArrayList<Card> pile= new ArrayList<Card>();
 	private AtomicInteger consecPasses=new AtomicInteger(0);
+	private ArrayList<Player> hierarchy= new ArrayList<Player>();
 	
 	/*
 	 * constructor for game - will attempt to adde self to game listing,
@@ -120,6 +121,29 @@ public class Game extends Thread
 	public void queueMove(Move move)
 	{
 		moveQueue.add(move);
+	}
+	
+	
+	/**
+	 * Adds the cards in a player's move to the pile. 
+	 * Lets the player know that the moves were accepted, 
+	 * so it removes those cards from its collection
+	 * @param move Move containing player and cards played
+	 */
+	public void playValidMove(Move move)
+	{
+	    pile.addAll(move.getCards());
+        //TODO do we want to be specific and tell it which cards to remove from its hand?
+	    move.getPlayer().updateQueue("move accepted");
+	}
+	
+	/**
+	 * Tell the player of move that it was not accepted.
+	 * @param move, Move containing player
+	 */
+	public void wagFinger(Move move){
+	    //TODO do we want to be specific and tell it which cards to keep?
+        move.getPlayer().updateQueue("invalid move");	    
 	}
 	
 	/**

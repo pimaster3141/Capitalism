@@ -1,6 +1,5 @@
 package lists;
 
-import java.util.LinkedHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import player.Player;
@@ -9,17 +8,13 @@ public class GameUserList extends UserList
 {
 	private AtomicInteger playerIndex= new AtomicInteger(0);
 	
-	public GameUserList()
-	{
-		this.players = new LinkedHashMap<String, Player>();
-	}
-	
 	/**
 	 * @return current Player as determined by playerIndex
 	 */
 	public Player getCurrentPlayer()
 	{
-		return (Player) this.players.values().toArray()[playerIndex.get()];
+		//return (Player) this.players.values().toArray()[playerIndex.get()];
+		return this.players.get(playerIndex.get());
 	}
 
 	/**
@@ -27,7 +22,7 @@ public class GameUserList extends UserList
 	 * To allow for rotation through players, when 
 	 * playerIndex= this.players.size(), reset to 0. 
 	 */
-	public void incrementPlayer(){
+	public synchronized void incrementPlayer(){
 		playerIndex.incrementAndGet();
 		playerIndex.compareAndSet(this.players.size(),0);
 	}
@@ -37,7 +32,7 @@ public class GameUserList extends UserList
 	 * To allow for rotation through players, when 
 	 * playerIndex= this.players.size(), reset to 0. 
 	 */
-	public Player incrementAndGetPlayer(){
+	public synchronized Player incrementAndGetPlayer(){
 		playerIndex.incrementAndGet();
 		playerIndex.compareAndSet(this.players.size(),0);
 		return this.getCurrentPlayer();
@@ -49,17 +44,24 @@ public class GameUserList extends UserList
 	 * @param p Player to find
 	 * @return index of player, or -1 if not found
 	 */
-	public int setCounter(Player p){
-		final int maxIterations=this.players.size();
-		for (int i=0; i<maxIterations; i++){
-			if (this.getCurrentPlayer().equals(p)){
-				return this.playerIndex.get();
-			}
-			else{
-				this.incrementPlayer();
-			}
+	public synchronized int setCounter(Player p){
+		if (players.contains(p))
+		{
+			playerIndex.set(players.indexOf(p));
+			return playerIndex.get();
 		}
-		return -1; //:( not found
+		return -1;
+		
+//		final int maxIterations=this.players.size();
+//		for (int i=0; i<maxIterations; i++){
+//			if (this.getCurrentPlayer().equals(p)){
+//				return this.playerIndex.get();
+//			}
+//			else{
+//				this.incrementPlayer();
+//			}
+//		}
+//		return -1; //:( not found
 	}
 	
 }

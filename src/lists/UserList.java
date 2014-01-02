@@ -3,8 +3,9 @@ package lists;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.LinkedList;
+import java.util.List;
+
 import player.Player;
 
 /**
@@ -14,14 +15,15 @@ import player.Player;
  */
 public abstract class UserList
 {
-	protected Map<String, Player> players;
+	//protected Map<String, Player> players;
+	protected List<Player> players;
 	
 	/*
 	 * constructor to init list
 	 */
 	public UserList()
 	{
-		this.players = new HashMap<String, Player>();
+		this.players = new LinkedList<Player>();
 	}
 	
 	/*
@@ -33,7 +35,7 @@ public abstract class UserList
 	 */
 	public boolean contains(Player player)
 	{
-		return players.containsKey(player.name);
+		return players.contains(player);
 	}
 
 	/*
@@ -45,7 +47,7 @@ public abstract class UserList
 	{
 		synchronized(players)
 		{
-			players.remove(player.name);
+			players.remove(player);
 			informAll(getList());
 			return;
 		}
@@ -64,7 +66,7 @@ public abstract class UserList
 		{
 			if(this.contains(player))
 				throw new IOException("Username Already Exists");
-			players.put(player.name, player);
+			players.add(player);
 			informAll(getList());
 			return;
 		}
@@ -91,7 +93,7 @@ public abstract class UserList
 		//make a copy of the list to work with... so we dont sacrifice throughput by long locks
 		synchronized (players)
 		{
-			copy = players.values().toArray(new Player[0]);
+			copy = players.toArray(new Player[0]);
 		}
 		
 		//spam everyone
@@ -104,14 +106,16 @@ public abstract class UserList
 	 * shouldnt need synchornization - used only by class and subclasses
 	 * @return String - formateted list of users in this list
 	 */
-	protected String getList()
+	private String getList()
 	{
 		if(this.size() <= 0)
 			return "";
 		StringBuilder output = new StringBuilder("");
 		ArrayList<String> copy = new ArrayList<String>();
-		for(String s : players.keySet())
-			copy.add(new String(s));
+		
+		for(Player p : players)
+			copy.add(new String(p.name));
+		
 		Collections.sort(copy);
 		for(String s : copy)
 			output.append(s + " ");

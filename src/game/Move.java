@@ -26,8 +26,8 @@ public class Move implements Comparable<Move>
 	public Move(Player player, ArrayList<Card> cards) throws RuntimeException
 	{
 		this.player = player;
-		if (!cardsEqualRank(cards)) throw new RuntimeException("Card ranks not equal");
 		this.cards = new ArrayList<Card>(cards);
+		if (!cardsEqualRank(this.cards)) throw new RuntimeException("Card ranks not equal");
 	}
 	
 	/**
@@ -38,16 +38,10 @@ public class Move implements Comparable<Move>
 	 */
 	private static boolean cardsEqualRank(ArrayList<Card> cards){
 		if (cards.size()<=1) return true;
-		synchronized(cards){
-			int maxRank=cards.get(0).getRank();
-			for (Card c: cards){
-				synchronized(c){
-					if (c.getRank()!=maxRank){
-						return false;
-					}
-				}
-			}
-		}
+		int maxRank=cards.get(0).getRank();
+		for (Card c: cards)
+			if (c.getRank()!=maxRank)
+				return false;
 		return true;
 	}
 	

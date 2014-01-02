@@ -2,6 +2,7 @@ package lists;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import cards.Card;
 import player.Player;
 
 public class GameUserList extends UserList
@@ -13,7 +14,6 @@ public class GameUserList extends UserList
 	 */
 	public Player getCurrentPlayer()
 	{
-		//return (Player) this.players.values().toArray()[playerIndex.get()];
 		return this.players.get(playerIndex.get());
 	}
 
@@ -39,8 +39,8 @@ public class GameUserList extends UserList
 	}
 	
 	/**
-	 * Finds player in map, and resets to that position
-	 * If player not found, it resets to the original position
+	 * Finds player in list, and resets to that position
+	 * If player not found, it keeps the original position
 	 * @param p Player to find
 	 * @return index of player, or -1 if not found
 	 */
@@ -51,17 +51,21 @@ public class GameUserList extends UserList
 			return playerIndex.get();
 		}
 		return -1;
-		
-//		final int maxIterations=this.players.size();
-//		for (int i=0; i<maxIterations; i++){
-//			if (this.getCurrentPlayer().equals(p)){
-//				return this.playerIndex.get();
-//			}
-//			else{
-//				this.incrementPlayer();
-//			}
-//		}
-//		return -1; //:( not found
+	}
+	
+	/**
+	 * Find the (first) player with a given card
+	 * @param c the Card to find in player's cards
+	 * @return the first Player in the list with the card. 
+	 */
+	public synchronized Player findPlayerWith(Card c){
+	    for (int i=0; i<this.size(); i++){
+	        Player p= this.players.get(i);
+	        synchronized(p){
+	            if (p.getHand().contains(c)) return p;
+	        }
+	    }
+	    return null;//card not found in any player's hand
 	}
 	
 }

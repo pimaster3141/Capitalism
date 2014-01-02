@@ -93,6 +93,19 @@ public abstract class Player implements Runnable
 		return  new ArrayList<Card>(hand);
 	}
 	
+	/**
+	 * Warning: can only be set once
+	 * @param c the desired hand to set
+	 * @return true if hand was set, else false if there was an existing non-empty hand
+	 */
+	public boolean setHand(ArrayList<Card> c){
+	    if (this.hand.isEmpty()){
+	        this.hand.addAll(c);
+	        return true;
+	    }
+	    return false;
+	}
+	
 	/*
 	 * Signature for move
 	 * move should push a particular move to the Game game's input queue to be processed

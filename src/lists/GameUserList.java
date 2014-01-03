@@ -58,14 +58,21 @@ public class GameUserList extends UserList
 	 * @param c the Card to find in player's cards
 	 * @return the first Player in the list with the card. 
 	 */
-	public synchronized Player findPlayerWith(Card c){
-	    for (int i=0; i<this.size(); i++){
-	        Player p= this.players.get(i);
-	        synchronized(p){
-	            if (p.getHand().contains(c)) return p;
-	        }
-	    }
-	    return null;//card not found in any player's hand
+	public Player findPlayerWith(Card c){
+		synchronized(players)
+		{
+			for(Player p : players)
+				if(p.getHand().contains(c))
+					return p;
+		}
+		return null;
+//	    for (int i=0; i<this.size(); i++){
+//	        Player p= this.players.get(i);
+//	        synchronized(p){
+//	            if (p.getHand().contains(c)) return p;
+//	        }
+//	    }
+//	    return null;//card not found in any player's hand
 	}
 	
 }

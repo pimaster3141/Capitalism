@@ -28,7 +28,7 @@ public class Game extends Thread
 	private LinkedBlockingQueue<Move> moveQueue = new LinkedBlockingQueue<Move>();	//queue to allow non sequential moves
 	private boolean alive = true;	//boolean if the game is still going
 	private Move lastMove=null; //can't count passes
-	private Player playerTurn; //player whose turn it currently is (can't make this an index unless we change GameUserList)
+	private Player playerTurn; //player whose turn it currently is (can't make this an index unless we change GameUserList)  -- suggesting removal?
 	private final Card START_CARD = new Card("diamond", 3);
 	private ArrayList<Card> pile= new ArrayList<Card>();
 	private AtomicInteger consecPasses=new AtomicInteger(0);
@@ -92,6 +92,7 @@ public class Game extends Thread
 			}
 			else
 				throw new IOException("Room does not exist");
+			players.notify();
 		}
 	}
 	
@@ -250,40 +251,64 @@ public class Game extends Thread
 	 */
 	public void run()
 	{
-		//stuff to accept players, init mainloop, and trading
-		while (this.players.size()<this.numPlayers){
-			HumanPlayer newPlayer;
-			try {
-				//TODO accept new players, block on join requests
-				newPlayer = new HumanPlayer(null, "Divya");
-				this.addUser(newPlayer);
-			} catch (IOException e) {
-				e.printStackTrace();
+		try
+		{
+			//block until all players connect
+			synchronized(players)
+			{
+				while(players.size() < numPlayers)
+					players.wait();
+			}
+			
+			//start mainloop - now in a game
+			System.out.println("starting game");
+			while(alive)
+			{
+				this.distributeDeck(); //deal cards
+				players.setCounter(this.players.findPlayerWith(START_CARD));
+				//start game
+				Move m = moveQueue.take();
+				if(this.isValidOnTurn(m))
+					this.doTurn(m);
+				else if (this.isValidSpam(m))
+					this.doSpam(m);
+			//add more logic and things	
 			}
 		}
-		//Give players cards from deck
-		this.distributeDeck();
-		//Game is in session. Whoever has START_CARD must play first
-		Player startPlayer= this.players.findPlayerWith(START_CARD);
-		this.players.setCounter(startPlayer);
-		while (true){
-			playerTurn=this.players.getCurrentPlayer();
-			try {
-				//Blocks until receiving a move
-				Move m= moveQueue.take();
-				//Normal turn (includes passes)
-				if (this.isValidOnTurn(m)){
-					this.doTurn(m);
-				}
-				//Spam case
-				else if (this.isValidSpam(m)){
-					this.doSpam(m);
-				}
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}			
+		catch(InterruptedException e)
+		{
+			//do somethinhg... dont know yet
 		}
+		
+		cleanup();
 	}
+		
+		
+//		//stuff to accept players, init mainloop, and trading}
+//		//Give players cards from deck
+//		this.distributeDeck();
+//		
+//		//Game is in session. Whoever has START_CARD must play first
+//		Player startPlayer= this.players.findPlayerWith(START_CARD);
+//		this.players.setCounter(startPlayer);
+//		while (true){
+//			playerTurn=this.players.getCurrentPlayer();
+//			try {
+//				//Blocks until receiving a move
+//				Move m= moveQueue.take();
+//				//Normal turn (includes passes)
+//				if (this.isValidOnTurn(m)){
+//					this.doTurn(m);
+//				}
+//				//Spam case
+//				else if (this.isValidSpam(m)){
+//					this.doSpam(m);
+//				}
+//			} catch (InterruptedException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}			
+//		}
+//	}
 
 }

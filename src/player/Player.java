@@ -14,6 +14,8 @@ import cards.Card;
  * 
  * TODO - figure out how to instruct game to skip player if the player has completed
  * TODO - implement some sort of trading
+ * 
+ * more
  *
  */
 public abstract class Player implements Runnable 
@@ -41,16 +43,6 @@ public abstract class Player implements Runnable
 	public void reset()
 	{
 		hand.clear();
-	}
-	
-	/*
-	 * Returns the name of the player
-	 * @return
-	 *  String - the name of the player
-	 */
-	public String getName()
-	{
-		return this.name;
 	}
 	
 	/*

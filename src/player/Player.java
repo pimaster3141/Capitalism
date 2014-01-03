@@ -24,6 +24,7 @@ public abstract class Player implements Runnable
 	private int rank;		//rank of player (for trading)
 	protected ArrayList<Card> hand;	//listing of cards held
 	protected Game game;	//game player is in
+	protected boolean inPlay;
 	
 	/*
 	 * Generic constructor, initialize fields
@@ -96,6 +97,14 @@ public abstract class Player implements Runnable
 	        return true;
 	    }
 	    return false;
+	}
+	
+	public void setPlay(boolean play){
+	    inPlay=play;
+	}
+	
+	public boolean inPlay(){
+	    return inPlay;
 	}
 	
 	/*

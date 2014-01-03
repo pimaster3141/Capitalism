@@ -28,7 +28,7 @@ public class Game extends Thread
 	private LinkedBlockingQueue<Move> moveQueue = new LinkedBlockingQueue<Move>();	//queue to allow non sequential moves
 	private boolean alive = true;	//boolean if the game is still going
 	private Move lastMove=null; //can't count passes
-	private Player playerTurn; //player whose turn it currently is (can't make this an index unless we change GameUserList)  -- suggesting removal?
+	//private Player playerTurn; //accepted your removal, just need to replace it everywhere
 	private final Card START_CARD = new Card("diamond", 3);
 	private ArrayList<Card> pile= new ArrayList<Card>();
 	private AtomicInteger consecPasses=new AtomicInteger(0);
@@ -171,7 +171,8 @@ public class Game extends Thread
 	 */
 	private boolean isValidOnTurn(Move move)
 	{
-		if (move.getPlayer().equals(playerTurn)){
+	    //make sure it is the player's turn
+		if (move.getPlayer().equals(this.players.getCurrentPlayer())){
 		    //allow for passes
 		    if (move.getCards().isEmpty()) return true;
 		    //special ranks (ex. 2)
@@ -217,7 +218,10 @@ public class Game extends Thread
 	        lastMove=m;	        
 	    }
         //Iterate to next person
-        this.players.incrementPlayer();
+	    try{
+	        this.players.incrementPlayer();
+	        
+	    }
 	}
 
 	/**
@@ -230,6 +234,7 @@ public class Game extends Thread
         //assuming it really was a spam
         pile.clear();
         consecPasses.set(0);
+        //spammer gets to play another turn
         this.players.setCounter(m.getPlayer());
 	}
 	
@@ -244,7 +249,11 @@ public class Game extends Thread
 	    }
 	}
 	
-	
+	private void addToHierarchy(Player p){
+	    hierarchy.add(p);
+	    //TODO remove p from play
+	    this.players.wonGame(p);
+	}
 	
 	/**
 	 * Runs the Game, from accepting players to actually playing rounds of the game
@@ -263,26 +272,26 @@ public class Game extends Thread
 			//start mainloop - now in a game
 			System.out.println("starting game");
 			
-			//At the beginning of each round: distribute deck, and find player with start card
-			this.distributeDeck(); //deal cards
-            players.setCounter(this.players.findPlayerWith(START_CARD));
-            
-            //Playing the game
-            while(alive)
-			{
-                //play game
-                playerTurn=this.players.getCurrentPlayer();//atm we NEED this because I compare to playerTurn in other methods. 
-                Move m = moveQueue.take();
-				if(this.isValidOnTurn(m))
-					this.doTurn(m);
-				else if (this.isValidSpam(m))
-					this.doSpam(m);
-				//see if the player that just played the move has an empty hand
-				if (m.getPlayer().getHand().isEmpty()){
-				    this.hierarchy.add(m.getPlayer());
-				    //we also need to remove player from turns!! 
-				    //not feasible with current logic, unless we create a new list to hold current players excluding hierarchy 
-				}
+			while(alive){//Looping rounds
+	            //At the beginning of each round: distribute deck, and find player with start card
+	            this.distributeDeck(); //deal cards
+	            players.setCounter(this.players.findPlayerWith(START_CARD));
+	            
+	            //Playing the game
+	            while(alive)//Looping moves in game
+	            {
+	                //play game
+	                Move m = moveQueue.take();
+	                if(this.isValidOnTurn(m))
+	                    this.doTurn(m);
+	                else if (this.isValidSpam(m))
+	                    this.doSpam(m);
+	                //see if the player that just played won (empty hand)
+	                if (m.getPlayer().getHand().isEmpty()){
+	                    this.addToHierarchy(m.getPlayer());
+	                }
+	                //see if hierarchy is full?
+	            }			    
 			}
 		}
 		catch(InterruptedException e)
@@ -292,33 +301,5 @@ public class Game extends Thread
 		
 		cleanup();
 	}
-		
-		
-//		//stuff to accept players, init mainloop, and trading}
-//		//Give players cards from deck
-//		this.distributeDeck();
-//		
-//		//Game is in session. Whoever has START_CARD must play first
-//		Player startPlayer= this.players.findPlayerWith(START_CARD);
-//		this.players.setCounter(startPlayer);
-//		while (true){
-//			playerTurn=this.players.getCurrentPlayer();
-//			try {
-//				//Blocks until receiving a move
-//				Move m= moveQueue.take();
-//				//Normal turn (includes passes)
-//				if (this.isValidOnTurn(m)){
-//					this.doTurn(m);
-//				}
-//				//Spam case
-//				else if (this.isValidSpam(m)){
-//					this.doSpam(m);
-//				}
-//			} catch (InterruptedException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}			
-//		}
-//	}
 
 }

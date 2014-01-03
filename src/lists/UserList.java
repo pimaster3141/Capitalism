@@ -49,7 +49,6 @@ public abstract class UserList
 		{
 			players.remove(player);
 			informAll(getList());
-			return;
 		}
 	}
 
@@ -68,7 +67,6 @@ public abstract class UserList
 				throw new IOException("Username Already Exists");
 			players.add(player);
 			informAll(getList());
-			return;
 		}
 	}
 

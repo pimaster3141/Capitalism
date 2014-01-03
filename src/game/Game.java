@@ -262,22 +262,32 @@ public class Game extends Thread
 			
 			//start mainloop - now in a game
 			System.out.println("starting game");
-			while(alive)
+			
+			//At the beginning of each round: distribute deck, and find player with start card
+			this.distributeDeck(); //deal cards
+            players.setCounter(this.players.findPlayerWith(START_CARD));
+            
+            //Playing the game
+            while(alive)
 			{
-				this.distributeDeck(); //deal cards
-				players.setCounter(this.players.findPlayerWith(START_CARD));
-				//start game
-				Move m = moveQueue.take();
+                //play game
+                playerTurn=this.players.getCurrentPlayer();//atm we NEED this because I compare to playerTurn in other methods. 
+                Move m = moveQueue.take();
 				if(this.isValidOnTurn(m))
 					this.doTurn(m);
 				else if (this.isValidSpam(m))
 					this.doSpam(m);
-			//add more logic and things	
+				//see if the player that just played the move has an empty hand
+				if (m.getPlayer().getHand().isEmpty()){
+				    this.hierarchy.add(m.getPlayer());
+				    //we also need to remove player from turns!! 
+				    //not feasible with current logic, unless we create a new list to hold current players excluding hierarchy 
+				}
 			}
 		}
 		catch(InterruptedException e)
 		{
-			//do somethinhg... dont know yet
+			//do something... don't know yet
 		}
 		
 		cleanup();

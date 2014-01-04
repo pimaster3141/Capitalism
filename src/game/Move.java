@@ -12,7 +12,7 @@ import player.Player;
  * A move is a player playing down zero or more cards. 
  * moves are immutable
  */
-public class Move //implements Comparable<Move>
+public class Move
 {
 	private final Player player;
 	private final ArrayList<Card> cards;

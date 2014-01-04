@@ -1,7 +1,9 @@
 package player;
 
 import game.Game;
+import game.Move;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -13,21 +15,37 @@ import cards.Card;
  * defines basic functions to play a game
  * extended by human and AI
  * 
- * TODO - figure out how to instruct game to skip player if the player has completed
- * TODO - implement some sort of trading
  * 
- * more
+ * 
+ * Just notes on how this works. 
+ * Players join games strictly by the joinGame and leaveGame methods
+ * 
+ * subclasses (and other classes have no visibility to game, pendingMove or the queues - they are all handled in house
+ * 		id also like to try to try to keep hand in house too (without accessors) but if its too hard, then screw it. 
+ * 
+ * Cards are removed from the hand when attempting a move. so if a move is accepted in the game, a valid check for if they are done (which
+ * 		needs to be done before processing ANY other moves is if hand is empty via boolean isEmptyHanded()
+ * 
+ * InPlay needs to be updated the same time when assigning a ranking. (like when you are doing the above check to
+ * 		prevent increment errors.
+ * 
+ * Game states are distributed to every player on every move. player will decide if they are useful or not
+ * 		via the preprocess and processState methods
+ * 
+ * moves are submitted only via the makeMove command... i guess there isnt any other way to submit a move since game is private... lol
+ * 
+ * TODO - depricate the depricated method updateQueue
  *
  */
 public abstract class Player implements Runnable 
 {
-	public final String name;	//name of player
-	private int rank;		//rank of player (for trading)
-	protected ArrayList<Card> hand;	//listing of cards held
-	protected Game game;	//game player is in
-	protected boolean inPlay = false;
-	private LinkedBlockingQueue<Outcome> responses;
-	private final Thread responseConsumer;
+	public final String name;		//name of player
+	private ArrayList<Card> hand;	//listing of cards held
+	private Game game;				//game player is in
+	private boolean inPlay = false;	//if the player is still playing (has cards)
+	private boolean pendingMove = false;	//if the player is waiting for a response from game
+	private LinkedBlockingQueue<GameState> responses;	//buffer for game updates from game
+	private Thread stateConsumer;	//consumer of above buffer
 	
 	/*
 	 * Generic constructor, initialize fields
@@ -37,35 +55,109 @@ public abstract class Player implements Runnable
 	public Player(String name)
 	{
 		this.name = name;	
-		this.rank = 0;
-		this.hand = new ArrayList<Card>();
-		responseConsumer = new Thread()
+		this.hand = null;
+		
+	}
+	
+	/**
+	 * Compares players for equality (based on name)
+	 * @param other - other Player to compare to
+	 * @return - are they the same russians?
+	 */
+	public boolean equals(Player other)
+	{
+		return this.name.equals(other.name);
+	}
+	
+	public boolean isEmptyHanded()
+	{
+		synchronized(hand)
 		{
-			public void run()
+			return (this.hand.size() == 0);
+		}
+	}
+	
+	/**
+	 * Used by Game to push a state to this player
+	 * @param s - state contaning the updateed game
+	 */
+	public void pushState(GameState s)
+	{
+		if (game == null)
+			throw new IllegalArgumentException("Null game??");
+		else
+			responses.add(s);
+	}
+	
+	/**
+	 * Used by players to join a game
+	 * Starts the consumer for game states
+	 * @param g - game to join
+	 * @throws IOException - if trying to join a game when in a game
+	 */
+	public void joinGame(Game g) throws IOException
+	{
+		synchronized(game)
+		{
+			//check if in a game
+			if (game != null)
+				throw new IOException("your game state isnt clear");
+			else
 			{
-				while(true)
-					try
+				this.game = g;
+				//instantiate a new consumer for the game buffer
+				stateConsumer = new Thread()
+				{
+					public void run()
 					{
-						processResponse(responses.take());
+						System.out.println("Player " + name + " starting state consumer for game: " + game.name);
+						while(game != null)
+						{
+							try
+							{	//process the state updates
+								preProcessState(responses.take());
+							}
+							catch (InterruptedException e)
+							{	//stop the consumer
+								System.out.println("Player " + name + " stopping state consumer for game: " + game.name);
+								break;
+							}
+						}
 					}
-					catch (InterruptedException e)
-					{
-						break;
-					}
+				};
+				
+				//clear the buffer for init
+				responses.clear();
+				//add self to the gameLists (update GUL)
+				this.game.addUser(this);
+				//start consumer
+				stateConsumer.start();
 			}
-		};
-		//responseConsumer.start();
+		}
 	}
 	
-	public void pushOutcome(Outcome o)
+	/**
+	 * Leaves a game cleanly, updates fields and stops consumer
+	 */
+	public void leaveGame()
 	{
-		responses.add(o);
-	}
-	
-	private void processResponse(Outcome o)
-	{
-		//do something
-		return;
+		synchronized(game)
+		{
+			//check if you are in a game
+			if (game == null)
+				throw new IllegalArgumentException("Null game???");
+			else
+			{
+				//update GUL
+				this.game.removeUser(this);
+				
+				//cleanup the consumer
+				this.game = null;
+				responses.clear();
+				stateConsumer.interrupt(); //halt consumer
+				this.reset(); //reset the playerState
+			}
+		}			
 	}
 	
 	/*
@@ -73,38 +165,13 @@ public abstract class Player implements Runnable
 	 */
 	public void reset()
 	{
-		hand.clear();
+		responses.clear();
+		synchronized(hand)
+		{
+			hand.clear();
+		}
 		inPlay = false;
-	}
-	
-	/*
-	 * Returns the rank of the player
-	 * @return
-	 *  int - the rank of the player (-2,-1,0,+1,+2)
-	 */
-	public int getRank()
-	{
-		return rank;
-	}
-	
-	/*
-	 * Sets the players rank
-	 * @param
-	 *  int - the rank of the player (-2,-1,0,+1,+2)
-	 */
-	public void setRank(int rank)
-	{
-		this.rank = rank;
-	}
-	
-	/*
-	 * Adds a card to the players hand
-	 * @param
-	 *  Card - card to be added to the hand
-	 */
-	public void addCard(Card card)
-	{
-		hand.add(card);
+		pendingMove = false;
 	}
 	
 	/*
@@ -114,7 +181,51 @@ public abstract class Player implements Runnable
 	 */
 	public ArrayList<Card> getHand()
 	{
-		return  new ArrayList<Card>(hand);
+		synchronized(hand)
+		{
+			return new ArrayList<Card>(hand);
+		}
+	}
+	
+	/**
+	 * Processes a move command, updates the hand to reflect the move and sets 'locks'
+	 * to prevent multiple move submissions. 
+	 * @param m - move to push to the game
+	 * @throws IOException - if you are currently waiting for a ressponse from the game
+	 */
+	protected synchronized void makeMove (Move m) throws IOException
+	{
+		if (pendingMove)
+			throw new IOException("chillax, you're waiting for a move");
+		synchronized (hand)
+		{
+			//remove cards from hand
+			for (Card c : m.getCards())
+				hand.remove(hand.indexOf(c));
+		}
+		//set lock
+		pendingMove = true;
+		//push move
+		game.queueMove(m);	
+	}
+	
+	/**
+	 * filters game state updates from the queue, resets the player for next move if necessary
+	 * resets cards if needed (like if they screwed up and made a crappy move)
+	 * @param s - state of the game as returned by game
+	 */
+	private synchronized void preProcessState(GameState s)
+	{
+		if(s.getPlayer().equals(this)) //check if the last move was this player
+		{
+			if(!s.accepted) //if this russian's move was not accepted 
+				synchronized(hand)
+				{
+					hand.addAll(s.getLastMove()); //you screwed up, you get your cards back
+				}
+			pendingMove = false; //take off the lock so you can make new moves
+		}
+		processState(s);	//postprocess state
 	}
 	
 	/**
@@ -122,32 +233,47 @@ public abstract class Player implements Runnable
 	 * @param c the desired hand to set
 	 * @return true if hand was set, else false if there was an existing non-empty hand
 	 */
-	public boolean setHand(ArrayList<Card> c){
-	    if (this.hand.isEmpty()){
-	        this.hand.addAll(c);
-	        inPlay = true;
-	        return true;
-	    }
-	    return false;
+	public boolean setHand(ArrayList<Card> c)
+	{
+		synchronized(hand)
+		{
+			if (this.hand.isEmpty())
+			{
+				this.hand.addAll(c);
+				inPlay = true;
+				return true;
+			}
+			return false;
+		}
 	}
 	
-	public void setPlay(boolean play){
+	/**
+	 * Stuff
+	 * @param play - stuff
+	 */
+	public void setPlay(boolean play)
+	{
 	    inPlay=play;
 	}
 	
+	/**
+	 * Are we done yet?
+	 * @return - DONE??!
+	 */
 	public boolean inPlay(){
 	    return inPlay;
 	}
 	
-	/*
-	 * Signature for move
-	 * move should push a particular move to the Game game's input queue to be processed
+	/**
+	 * Signature for string messages to be sent to remote clients 
+	 * DEPRICATED - TRY NOT TO USE THIS CUZ I KINDA WANT TO GET RID OF IT
+	 * @param message - stuff you want to tell Russia
 	 */
-	public abstract void makeMove();	
+	public abstract void updateQueue(String message);
 	
-	/*
-	 * signature for update queue
-	 * feedback from game or server(lists) to update state
+	/**
+	 * Signature to process game updates
+	 * @param s - the updated state of the game
 	 */
-	public abstract void updateQueue(String info);
+	protected abstract void processState (GameState s);
 }

@@ -74,13 +74,13 @@ public class Game extends Thread
 	}
 	
 	/*
-	 * adds a user to this game
+	 * adds a user to this game ONLY TO BE CALLED THROUGH PLAYER.JOINGAME
 	 * @param
 	 * 	HumanPlayer - player to be added
 	 * @Throws
 	 * 	IOException - if the player cannot be added - like if it is cheating and trying to join multiple times 
 	 */
-	public void addUser(HumanPlayer player) throws IOException
+	public void addUser(Player player) throws IOException
 	{
 		synchronized(players)
 		{

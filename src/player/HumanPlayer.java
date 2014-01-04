@@ -145,22 +145,10 @@ public class HumanPlayer extends Player
 		outputBuffer.add(info);
 	}
 
-	/**
-	 * Plays the cards of the user as a "move", will be in queue of moves to push to server?
-	 * @param cards
-	 */
-	public void playCards(ArrayList<Card> cards){
-		Move x= new Move(this, cards);
-		movesToGame.add(x);
-	}
-	
-	/*
-	 * will push a particular move to the Game game's input queue to be processed
-	 */
-	public void makeMove()
-	{
-		// TODO check
-		this.game.queueMove(movesToGame.remove(0));//or if we switch to a queue, movesToGame.pop()
+	@Override
+	protected void processState(GameState s) {
+		// TODO Auto-generated method stub
+		
 	}
 		
 

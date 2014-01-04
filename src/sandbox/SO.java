@@ -16,6 +16,7 @@ public class SO {
     }
 
     BlockingQueue<String> qq = new LinkedBlockingQueue<String>();
+    String wheee = new String("wheee");
 
     class Producer implements Runnable {
         public void run() {
@@ -26,7 +27,7 @@ public class SO {
                         while (qq.size() > 0)
                         {
                         	System.out.println("waitblock");
-                            qq.wait();
+                            wheee.wait();
                             System.out.println("   after waitblock");
                         }
 
@@ -47,7 +48,7 @@ public class SO {
                 while(true) {
                 	synchronized(qq){
                 		System.err.println("Taking " + qq.take()+". "+String.valueOf(qq.size())+" left");
-                		qq.notify();
+                		wheee.notify();
                 	}
                 	Thread.sleep(1000);
                 }

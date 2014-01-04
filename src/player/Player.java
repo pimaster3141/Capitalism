@@ -3,6 +3,7 @@ package player;
 import game.Game;
 
 import java.util.ArrayList;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import cards.Card;
 
@@ -24,7 +25,9 @@ public abstract class Player implements Runnable
 	private int rank;		//rank of player (for trading)
 	protected ArrayList<Card> hand;	//listing of cards held
 	protected Game game;	//game player is in
-	protected boolean inPlay;
+	protected boolean inPlay = false;
+	private LinkedBlockingQueue<Outcome> responses;
+	private final Thread responseConsumer;
 	
 	/*
 	 * Generic constructor, initialize fields
@@ -36,6 +39,33 @@ public abstract class Player implements Runnable
 		this.name = name;	
 		this.rank = 0;
 		this.hand = new ArrayList<Card>();
+		responseConsumer = new Thread()
+		{
+			public void run()
+			{
+				while(true)
+					try
+					{
+						processResponse(responses.take());
+					}
+					catch (InterruptedException e)
+					{
+						break;
+					}
+			}
+		};
+		//responseConsumer.start();
+	}
+	
+	public void pushOutcome(Outcome o)
+	{
+		responses.add(o);
+	}
+	
+	private void processResponse(Outcome o)
+	{
+		//do something
+		return;
 	}
 	
 	/*
@@ -44,6 +74,7 @@ public abstract class Player implements Runnable
 	public void reset()
 	{
 		hand.clear();
+		inPlay = false;
 	}
 	
 	/*
@@ -94,6 +125,7 @@ public abstract class Player implements Runnable
 	public boolean setHand(ArrayList<Card> c){
 	    if (this.hand.isEmpty()){
 	        this.hand.addAll(c);
+	        inPlay = true;
 	        return true;
 	    }
 	    return false;

@@ -101,7 +101,7 @@ public class GameList
 	 * @return 
 	 * 	Game - game object 
 	 */
-	public Game getGameFromName(String gameName)
+	public synchronized Game getGameFromName(String gameName)
 	{
 		return games.get(gameName);
 	}

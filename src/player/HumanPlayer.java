@@ -12,6 +12,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import lists.GameList;
 import cards.Card;
 
 public class HumanPlayer extends Player
@@ -22,11 +23,12 @@ public class HumanPlayer extends Player
 	private final LinkedBlockingQueue<String> outputBuffer = new LinkedBlockingQueue<String>();
 	private final Thread outputConsumer;
 	private boolean alive = true;
-	private final ArrayList<Move> movesToGame= new ArrayList<Move>();//TODO switch to queue?
+	private final GameList games;
 	
-	public HumanPlayer(Socket socket, String username) throws IOException
+	public HumanPlayer(Socket socket, String username, GameList games) throws IOException
 	{
 		super(username);
+		this.games = games;
 		this.socket = socket;
 		in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 		out = new PrintWriter(socket.getOutputStream(), true);
@@ -112,11 +114,90 @@ public class HumanPlayer extends Player
 	 */
 	private String parseInput(String input)
 	{
-		String regex = "";
+		String regex = "(disconnect)|(((make)|(join)|(leave)) \\p{Graph}+)|((move)( [2-9JQKA][HSCD])*)";
 		Pattern p = Pattern.compile(regex);
 		Matcher m = p.matcher(input);
 		
-		return input;
+		//check if input is valid
+		if(!m.matches())
+			return ("Unrecognized Command: " + input);
+		
+		//parse first token of string
+		int spaceIndex =  input.indexOf(' ');
+		String command = input.substring(0, spaceIndex);
+		
+		//interpret command
+		if (command.equals("disconnect"))
+		{
+			//TODO - trigger disconnect
+			return ("disconnect success");
+		}
+		
+		String arguments = input.substring(spaceIndex + 1);
+		
+		if (command.equals("make"))
+			//TODO - trigger make room
+			return "Something to say you made a room properly: " + arguments;
+		
+		if (command.equals("join"))
+		{
+			try 
+			{
+				this.joinGame(games.getGameFromName(arguments));
+			} 
+			catch (IOException e1) 
+			{
+				// TODO Auto-generated catch block
+				return e1.getMessage();
+			}
+			return "Something to say you joined a room properly: " + arguments;
+		}
+		
+		if (command.equals("leave"))
+		{
+			//TODO - trigger leave room
+			this.leaveGame();
+			return "Something to say you left a room properly: " + arguments;
+		}
+		
+		if (command.equals("move"))
+		{
+			String[] moveArray = arguments.split(" ");
+			ArrayList<Card> cards = new ArrayList<Card>(moveArray.length);
+			Move move;
+			for(String s : moveArray)
+			{
+				try
+				{
+					cards.add(new Card(s));
+				}
+				catch(IOException e)
+				{
+					return e.getMessage();
+				}
+			}
+			try 
+			{
+				move = new Move(this, cards);
+			} 
+			catch (IOException e)
+			{
+				return e.getMessage();
+			}
+			try 
+			{ 
+				this.makeMove(move);
+			} 
+			catch (IOException e) 
+			{
+				// TODO Auto-generated catch block
+				return e.getMessage();
+			}
+			
+			return "Something to say woot you didnt throw an exeption when making a move " + arguments;
+		}
+		
+		return "Congrats, you somehow got to this place where you arent supposed to.... good job";
 	}
 	
 	/*

@@ -1,5 +1,7 @@
 package cards;
 
+import java.io.IOException;
+
 /**
  * Class for representing cards in game. 
  * Immutable. 
@@ -33,6 +35,66 @@ public class Card implements Comparable<Card>
     public Card(String suitString, int num){
         suit=Suit.valueOf(suitString.toUpperCase());
         number=num;
+    }
+    
+    /**
+     * Constructor to make iit easy to convert things like 2C (2 - clubs) or AS (ace-spades) to 
+     * card objects
+     * @param shorthand - strigg of card shorthand
+     * @throws IOException - if you are an idiot
+     * 
+     * TODO - change IOException message to something useful since they will be used to send back to client
+     */
+    public Card(String shorthand) throws IOException
+    {
+    	if(shorthand.length() != 2)
+    		throw new IOException("invalid argument");
+    	switch(shorthand.substring(0, 1))
+    	{
+    		case("J"):
+    			number = 11;
+    			break;
+    		
+    		case("Q"):
+    			number = 12;
+    			break;
+    		
+    		case("K"):
+    			number = 13;
+    			break;
+    		
+    		case("A"):
+    			number = 1;
+    			break;
+    			
+    		
+    		default:
+    			number = Integer.parseInt(shorthand.substring(0,1));
+    			if (number > 10 || number < 2)
+    				throw new IOException("invalid argument");
+    	}
+    		
+    	switch(shorthand.substring(1))
+    	{
+    		case("C"):
+    			suit = Suit.CLUB;
+    			break;
+    			
+    		case("S"):
+    			suit = Suit.SPADE;
+    			break;
+    			
+    		case("H"):
+    			suit = Suit.HEART;
+   				break;
+   				
+    		case("D"):
+    			suit = Suit.DIAMOND;
+    			break;
+    		
+    		default:
+    			throw new IOException("invalid argument");
+    	}
     }
     
     public int getNumber(){

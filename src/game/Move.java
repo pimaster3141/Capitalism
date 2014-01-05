@@ -1,5 +1,6 @@
 package game;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import cards.Card;
@@ -23,11 +24,11 @@ public class Move
 	 * @param cards, collection of cards with same rank (empty ok, treated as pass)
 	 * @throws RuntimeException if all cards do not have the same rank
 	 */
-	public Move(Player player, ArrayList<Card> cards) throws RuntimeException
+	public Move(Player player, ArrayList<Card> cards) throws IOException
 	{
 		this.player = player;
 		this.cards = new ArrayList<Card>(cards);
-		if (!cardsEqualRank(this.cards)) throw new RuntimeException("Card ranks not equal");
+		if (!cardsEqualRank(this.cards)) throw new IOException("Card ranks not equal");
 	}
 	
 	/**

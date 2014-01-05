@@ -151,7 +151,7 @@ public class HumanPlayer extends Player
 		}
 		
 		//collect additional arguments
-		String arguments = input.substring(spaceIndex + 1);
+		String arguments = input.substring(spaceIndex).trim();
 		
 		//MAKE ROOM 
 		if (command.equals("make"))

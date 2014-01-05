@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -138,12 +139,14 @@ public class HumanPlayer extends Player
 			return ("Unrecognized Command: " + input);
 		
 		//parse first token of string
-		int spaceIndex =  input.indexOf(' ');
-		String command = input.substring(0, spaceIndex);
+//		int spaceIndex =  input.indexOf(' ');
+//		String command = input.substring(0, spaceIndex);
+		
+		String[] commands = input.split(" ");
 		
 		//interpret commands below
 		//DISCONNECT
-		if (command.equals("disconnect"))
+		if (commands[0].equals("disconnect"))
 		{
 			//TODO - trigger disconnect
 			this.alive = false;
@@ -151,44 +154,46 @@ public class HumanPlayer extends Player
 		}
 		
 		//collect additional arguments
-		String arguments = input.substring(spaceIndex).trim();
+//		String[] arguments = input.split("(disconnect)|(make)|(join)|(leave)|(move)| ");
 		
 		//MAKE ROOM 
-		if (command.equals("make"))
+		if (commands[0].equals("make"))
 			//TODO - trigger make room
-			return "Something to say you made a room properly: " + arguments;
+			return "Something to say you made a room properly: " + Arrays.deepToString(commands);
 		
 		//JOIN ROOM
-		if (command.equals("join"))
+		if (commands[0].equals("join"))
 		{
 			try 
 			{
-				this.joinGame(games.getGameFromName(arguments));
+				this.joinGame(games.getGameFromName(commands[1]));
 			} 
 			catch (IOException e1) 
 			{
 				// TODO Auto-generated catch block
 				return e1.getMessage();
 			}
-			return "Something to say you joined a room properly: " + arguments;
+			return "Something to say you joined a room properly: " + Arrays.deepToString(commands);
 		}
 		
-		if (command.equals("leave"))
+		if (commands[0].equals("leave"))
 		{
 			//TODO - trigger leave room
 			this.leaveGame();
-			return "Something to say you left a room properly: " + arguments;
+			return "Something to say you left a room properly: " + Arrays.deepToString(commands);
 		}
 		
 		//MAKE A MOVE
-		if (command.equals("move"))
+		if (commands[0].equals("move"))
 		{
 			//split incoming card strings
-			String[] moveArray = arguments.split(" "); 
+			String[] arguments = Arrays.copyOfRange(commands, 1, commands.length);
+			
+			System.out.println(Arrays.deepToString(arguments));
 			//create new cards in array from string
-			ArrayList<Card> cards = new ArrayList<Card>(moveArray.length);
+			ArrayList<Card> cards = new ArrayList<Card>(arguments.length);
 			Move move;
-			for(String s : moveArray)
+			for(String s : arguments)
 			{
 				try
 				{
@@ -219,7 +224,7 @@ public class HumanPlayer extends Player
 				return e.getMessage();
 			}
 			
-			return "Something to say woot you didnt throw an exeption when making a move " + arguments;
+			return "Something to say woot you didnt throw an exeption when making a move " + Arrays.deepToString(arguments);
 		}
 		
 		//if you get here, then you are really pro at breaking code... good job. 

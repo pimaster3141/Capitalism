@@ -55,7 +55,7 @@ public abstract class Player implements Runnable
 	public Player(String name)
 	{
 		this.name = name;	
-		this.hand = null;
+		this.hand = new ArrayList<Card>();
 		
 	}
 	
@@ -239,7 +239,7 @@ public abstract class Player implements Runnable
 		{
 			if (this.hand.isEmpty())
 			{
-				this.hand.addAll(c);
+				this.hand = new ArrayList<Card>(c);
 				inPlay = true;
 				return true;
 			}

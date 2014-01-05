@@ -14,17 +14,28 @@ import java.util.regex.Pattern;
 
 import lists.GameList;
 import cards.Card;
-
+/** 
+ * 
+ * Implements a human player extension of player (adds support for TCP/IP players)
+ *
+ */
 public class HumanPlayer extends Player
 {
-	private final Socket socket;
-	private final BufferedReader in;
-	private final PrintWriter out;
-	private final LinkedBlockingQueue<String> outputBuffer = new LinkedBlockingQueue<String>();
-	private final Thread outputConsumer;
-	private boolean alive = true;
-	private final GameList games;
+	private final Socket socket;		//Socket to connect to
+	private final BufferedReader in;	//input stream from socket
+	private final PrintWriter out;		//output stream to socket 
+	private final LinkedBlockingQueue<String> outputBuffer = new LinkedBlockingQueue<String>();	//input buffer from remote client
+	private final Thread outputConsumer;	//consumer for above buffer
+	private boolean alive = true;		//boolean if this player is still functioning
+	private final GameList games;		//directory of active games on this server
 	
+	/**
+	 * Constructor for a human player
+	 * @param socket - socket to bind to
+	 * @param username - name of player
+	 * @param games - global directory of games on server
+	 * @throws IOException - if the player cannot be created like if your socket has problems
+	 */
 	public HumanPlayer(Socket socket, String username, GameList games) throws IOException
 	{
 		super(username);
@@ -109,11 +120,15 @@ public class HumanPlayer extends Player
 		}
 	}
 
-	/*
-	 * define any input filtering/triggers here
+	/**
+	 * Filter and parser for the input stream
+	 * MUST HANDLE EXCEPTIONS HERE
+	 * @param input - input string to parse
+	 * @return - string to be sent back to client regarding input
 	 */
 	private String parseInput(String input)
 	{
+		//define regex to parse input
 		String regex = "(disconnect)|(((make)|(join)|(leave)) \\p{Graph}+)|((move)( [2-9JQKA][HSCD])*)";
 		Pattern p = Pattern.compile(regex);
 		Matcher m = p.matcher(input);
@@ -126,19 +141,24 @@ public class HumanPlayer extends Player
 		int spaceIndex =  input.indexOf(' ');
 		String command = input.substring(0, spaceIndex);
 		
-		//interpret command
+		//interpret commands below
+		//DISCONNECT
 		if (command.equals("disconnect"))
 		{
 			//TODO - trigger disconnect
+			this.alive = false;
 			return ("disconnect success");
 		}
 		
+		//collect additional arguments
 		String arguments = input.substring(spaceIndex + 1);
 		
+		//MAKE ROOM 
 		if (command.equals("make"))
 			//TODO - trigger make room
 			return "Something to say you made a room properly: " + arguments;
 		
+		//JOIN ROOM
 		if (command.equals("join"))
 		{
 			try 
@@ -160,9 +180,12 @@ public class HumanPlayer extends Player
 			return "Something to say you left a room properly: " + arguments;
 		}
 		
+		//MAKE A MOVE
 		if (command.equals("move"))
 		{
-			String[] moveArray = arguments.split(" ");
+			//split incoming card strings
+			String[] moveArray = arguments.split(" "); 
+			//create new cards in array from string
 			ArrayList<Card> cards = new ArrayList<Card>(moveArray.length);
 			Move move;
 			for(String s : moveArray)
@@ -176,6 +199,7 @@ public class HumanPlayer extends Player
 					return e.getMessage();
 				}
 			}
+			//try to create a new move from the cardList 
 			try 
 			{
 				move = new Move(this, cards);
@@ -184,6 +208,7 @@ public class HumanPlayer extends Player
 			{
 				return e.getMessage();
 			}
+			//try to push the move to the game
 			try 
 			{ 
 				this.makeMove(move);
@@ -197,6 +222,7 @@ public class HumanPlayer extends Player
 			return "Something to say woot you didnt throw an exeption when making a move " + arguments;
 		}
 		
+		//if you get here, then you are really pro at breaking code... good job. 
 		return "Congrats, you somehow got to this place where you arent supposed to.... good job";
 	}
 	
@@ -226,7 +252,9 @@ public class HumanPlayer extends Player
 		outputBuffer.add(info);
 	}
 
-	@Override
+	/**
+	 * something to update the player about what is going on with the game
+	 */
 	protected void processState(GameState s) {
 		// TODO Auto-generated method stub
 		

@@ -64,9 +64,11 @@ public abstract class Player implements Runnable
 	 * @param other - other Player to compare to
 	 * @return - are they the same russians?
 	 */
-	public boolean equals(Player other)
+	public boolean equals(Object other)
 	{
-		return this.name.equals(other.name);
+		if (other.getClass() != Player.class)
+			return false;
+		return this.name.equals(((Player)other).name);
 	}
 	
 	public boolean isEmptyHanded()
@@ -81,7 +83,7 @@ public abstract class Player implements Runnable
 	 * Used by Game to push a state to this player
 	 * @param s - state contaning the updateed game
 	 */
-	public void pushState(GameState s)
+	public synchronized void pushState(GameState s)
 	{
 		if (game == null)
 			throw new IllegalArgumentException("Null game??");
@@ -95,69 +97,63 @@ public abstract class Player implements Runnable
 	 * @param g - game to join
 	 * @throws IOException - if trying to join a game when in a game
 	 */
-	public void joinGame(Game g) throws IOException
+	public synchronized void joinGame(Game g) throws IOException
 	{
-		synchronized(game)
+		//check if in a game
+		if (game != null)
+			throw new IOException("your game state isnt clear");
+		else
 		{
-			//check if in a game
-			if (game != null)
-				throw new IOException("your game state isnt clear");
-			else
+			this.game = g;
+			//instantiate a new consumer for the game buffer
+			stateConsumer = new Thread()
 			{
-				this.game = g;
-				//instantiate a new consumer for the game buffer
-				stateConsumer = new Thread()
+				public void run()
 				{
-					public void run()
+					System.out.println("Player " + name + " starting state consumer for game: " + game.name);
+					while(game != null)
 					{
-						System.out.println("Player " + name + " starting state consumer for game: " + game.name);
-						while(game != null)
-						{
-							try
-							{	//process the state updates
-								preProcessState(responses.take());
-							}
-							catch (InterruptedException e)
-							{	//stop the consumer
-								System.out.println("Player " + name + " stopping state consumer for game: " + game.name);
-								break;
-							}
+						try
+						{	//process the state updates
+							preProcessState(responses.take());
+						}
+						catch (InterruptedException e)
+						{	//stop the consumer
+							System.out.println("Player " + name + " stopping state consumer for game: " + game.name);
+							break;
 						}
 					}
-				};
-				
-				//clear the buffer for init
-				responses.clear();
-				//add self to the gameLists (update GUL)
-				this.game.addUser(this);
-				//start consumer
-				stateConsumer.start();
-			}
+				}
+			};
+			
+			//clear the buffer for init
+			responses.clear();
+			//add self to the gameLists (update GUL)
+			this.game.addUser(this);
+			//start consumer
+			stateConsumer.start();
 		}
 	}
 	
 	/**
 	 * Leaves a game cleanly, updates fields and stops consumer
 	 */
-	public void leaveGame()
+	public synchronized void leaveGame()
 	{
-		synchronized(game)
+		//check if you are in a game
+		if (game == null)
+			throw new IllegalArgumentException("Null game???");
+		else
 		{
-			//check if you are in a game
-			if (game == null)
-				throw new IllegalArgumentException("Null game???");
-			else
-			{
-				//update GUL
-				this.game.removeUser(this);
-				
-				//cleanup the consumer
-				this.game = null;
-				responses.clear();
-				stateConsumer.interrupt(); //halt consumer
-				this.reset(); //reset the playerState
-			}
-		}			
+			//update GUL
+			this.game.removeUser(this);
+			
+			//cleanup the consumer
+			this.game = null;
+			responses.clear();
+			stateConsumer.interrupt(); //halt consumer
+			this.reset(); //reset the playerState
+		}		
 	}
 	
 	/*
@@ -195,13 +191,20 @@ public abstract class Player implements Runnable
 	 */
 	protected synchronized void makeMove (Move m) throws IOException
 	{
+		if (game == null)
+			throw new IOException("you arent in a game, cant make move");
+		
 		if (pendingMove)
 			throw new IOException("chillax, you're waiting for a move");
 		synchronized (hand)
 		{
 			//remove cards from hand
 			for (Card c : m.getCards())
+			{
+				if (!hand.contains(c))
+					throw new IOException("You dont have card: " + c);
 				hand.remove(hand.indexOf(c));
+			}
 		}
 		//set lock
 		pendingMove = true;

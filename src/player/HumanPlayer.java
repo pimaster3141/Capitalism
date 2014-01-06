@@ -14,6 +14,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import lists.GameList;
+import lists.ServerUserList;
+import lists.UserList;
 import cards.Card;
 /** 
  * 
@@ -29,6 +31,7 @@ public class HumanPlayer extends Player
 	private final Thread outputConsumer;	//consumer for above buffer
 	private boolean alive = true;		//boolean if this player is still functioning
 	private final GameList games;		//directory of active games on this server
+	private final UserList users;
 	
 	/**
 	 * Constructor for a human player
@@ -37,10 +40,11 @@ public class HumanPlayer extends Player
 	 * @param games - global directory of games on server
 	 * @throws IOException - if the player cannot be created like if your socket has problems
 	 */
-	public HumanPlayer(Socket socket, String username, GameList games) throws IOException
+	public HumanPlayer(Socket socket, String username, GameList games, UserList users) throws IOException
 	{
 		super(username);
 		this.games = games;
+		this.users = users;
 		this.socket = socket;
 		in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 		out = new PrintWriter(socket.getOutputStream(), true);
@@ -109,6 +113,8 @@ public class HumanPlayer extends Player
 			// stop the output thread
 			outputConsumer.interrupt();
 			System.out.println("Client: " + name + " - " + "Output Thread Interrupted");
+			this.cleanup();
+			
 			// close the socket
 			try
 			{
@@ -119,6 +125,19 @@ public class HumanPlayer extends Player
 			}
 			System.out.println("Client: " + name + " - " + "Cleanup Complete");
 		}
+	}
+
+	/**
+	 * Handles cleaning up the connection - removing from games, and server, 
+	 */
+	private void cleanup()
+	{
+		this.leaveGame();
+
+		// removes the user from the server
+		System.out.println("Client: " + name + " - " + "Removing from server listing");
+		users.remove(this);
+		return;
 	}
 
 	/**

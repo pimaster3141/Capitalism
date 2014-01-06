@@ -64,11 +64,9 @@ public abstract class Player implements Runnable
 	 * @param other - other Player to compare to
 	 * @return - are they the same russians?
 	 */
-	public boolean equals(Object other)
+	public boolean equals(Player other)
 	{
-		if (other.getClass() != Player.class)
-			return false;
-		return this.name.equals(((Player)other).name);
+		return this.name.equals(other.name);
 	}
 	
 	public boolean isEmptyHanded()
@@ -97,7 +95,7 @@ public abstract class Player implements Runnable
 	 * @param g - game to join
 	 * @throws IOException - if trying to join a game when in a game
 	 */
-	public synchronized void joinGame(Game g) throws IOException
+	protected synchronized void joinGame(Game g) throws IOException
 	{
 		//check if in a game
 		if (game != null)
@@ -138,11 +136,11 @@ public abstract class Player implements Runnable
 	/**
 	 * Leaves a game cleanly, updates fields and stops consumer
 	 */
-	public synchronized void leaveGame()
+	protected synchronized void leaveGame()
 	{
 		//check if you are in a game
 		if (game == null)
-			throw new IllegalArgumentException("Null game???");
+			return;
 		else
 		{
 			//update GUL

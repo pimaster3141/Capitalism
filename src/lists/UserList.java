@@ -32,10 +32,16 @@ public abstract class UserList
 	 * 	Player - the player to be checked
 	 * @return
 	 * 	bololean - if the player exists
+	 * 
+	 * note, if we make this pubic, synchronize on players.
 	 */
-	public boolean contains(Player player)
+	private boolean contains(Player player)
 	{
-		return players.contains(player);
+		//return players.contains(player);
+		for (Player p : players)
+			if (player.equals(p))
+				return true;
+		return false;
 	}
 
 	/*

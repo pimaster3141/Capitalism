@@ -177,6 +177,7 @@ public class HumanPlayer extends Player
 		
 		//MAKE ROOM 
 		if (commands[0].equals("make"))
+			
 			//TODO - trigger make room
 			return "Something to say you made a room properly: " + Arrays.deepToString(commands);
 		

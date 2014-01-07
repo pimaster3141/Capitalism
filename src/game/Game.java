@@ -48,7 +48,7 @@ public class Game extends Thread
 	 * @throws
 	 * 	IOException - if the creation fails
 	 */
-	public Game(String name, GameList games, HumanPlayer creator, int numHuman, int numDecks) throws IOException
+	public Game(String name, GameList games, int numHuman, int numDecks) throws IOException
 	{
 		this.name = name;
 		this.games = games;
@@ -63,14 +63,14 @@ public class Game extends Thread
         }
 		
 		this.players = new GameUserList();
-		synchronized(players)
-		{
-			games.add(this);
-			creator.updateQueue("Someting to say they created a room");
-			players.add(creator);
-		}
-		
-		this.start();
+//		synchronized(players)
+//		{
+//			games.add(this);
+//			creator.updateQueue("Someting to say they created a room");
+//			players.add(creator);
+//		}
+//		
+//		this.start();
 	}
 	
 	/*
@@ -86,9 +86,8 @@ public class Game extends Thread
 		{
 			if(alive)
 			{
-				if(!players.contains(player))
-					player.updateQueue("something to say they joined properly");
 				players.add(player);
+				player.updateQueue("something to say they joined properly");
 			}
 			else
 				throw new IOException("Room does not exist");

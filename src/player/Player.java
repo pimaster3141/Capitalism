@@ -44,7 +44,7 @@ public abstract class Player implements Runnable
 	private Game game;				//game player is in
 	private boolean inPlay = false;	//if the player is still playing (has cards)
 	private boolean pendingMove = false;	//if the player is waiting for a response from game
-	private LinkedBlockingQueue<GameState> responses;	//buffer for game updates from game
+	private final LinkedBlockingQueue<GameState> responses = new LinkedBlockingQueue<GameState>();	//buffer for game updates from game
 	private Thread stateConsumer;	//consumer of above buffer
 	
 	/*
@@ -100,6 +100,8 @@ public abstract class Player implements Runnable
 		//check if in a game
 		if (game != null)
 			throw new IOException("your game state isnt clear");
+		if (g == null)
+			throw new IOException("Null game passed");
 		else
 		{
 			this.game = g;

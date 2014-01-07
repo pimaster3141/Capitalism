@@ -48,7 +48,7 @@ public class Game extends Thread
 	 * @throws
 	 * 	IOException - if the creation fails
 	 */
-	public Game(String name, GameList games, int numHuman, int numDecks) throws IOException
+	public Game(String name, GameList games, int numHuman, int numDecks)
 	{
 		this.name = name;
 		this.games = games;

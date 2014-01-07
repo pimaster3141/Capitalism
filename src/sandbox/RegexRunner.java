@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 public class RegexRunner
 {
     //public static Pattern pattern = Pattern.compile("%.*|V:.+|(\\|[\\]:]|(:|\\[|\\|)?\\||\\[[12]|[\\[\\]])|\\([0-9]|(z|((\\^\\^?|__?|=)?([A-Ga-g]('+|,+)?)))([0-9]*(/[0-9]*)?)" );
-    public static Pattern pattern = Pattern.compile("(disconnect)|(((make)|(join)|(leave)) \\p{Graph}+)|((move)( [2-9JQKA][HSCD])*)");
+    public static Pattern pattern = Pattern.compile("(disconnect)|(((join)|(leave)) \\p{Graph}+)|((make) \\p{Graph}+ [1-9][0-9]* [1-9][0-9]*)|((move)( [2-9JQKA][HSCD])*)");
 
     public static void display(String s)
     {

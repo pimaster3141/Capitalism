@@ -101,8 +101,10 @@ public class GameList
 	 * @return 
 	 * 	Game - game object 
 	 */
-	public synchronized Game getGameFromName(String gameName)
+	public synchronized Game getGameFromName(String gameName) throws IOException
 	{
+		if (!this.contains(gameName))
+			throw new IOException ("Game does not exist");
 		return games.get(gameName);
 	}
 

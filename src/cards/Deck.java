@@ -38,7 +38,7 @@ public class Deck {
         for (int i=0; i<numRep; i++){
             for (Card.Suit s: Card.Suit.values()){
                 //excluding Jokers
-                if (s!=Card.Suit.valueOf("Joker")){
+                if (s!=Card.Suit.valueOf("JOKER")){
                     for (int val=1; val<13; val++){
                         cards.add(new Card(s.toString(),val));
                     }

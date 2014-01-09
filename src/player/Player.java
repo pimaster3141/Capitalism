@@ -110,7 +110,8 @@ public abstract class Player implements Runnable
 			{
 				public void run()
 				{
-					System.out.println("Player " + name + " starting state consumer for game: " + game.name);
+					String gameName = game.name;
+					System.out.println("Client: " + name + " starting state consumer for game: " + game.name);
 					while(game != null)
 					{
 						try
@@ -119,7 +120,7 @@ public abstract class Player implements Runnable
 						}
 						catch (InterruptedException e)
 						{	//stop the consumer
-							System.out.println("Player " + name + " stopping state consumer for game: " + game.name);
+							System.out.println("Client: " + name + " stopping state consumer for game: " + gameName);
 							break;
 						}
 					}

@@ -121,6 +121,7 @@ public class Game extends Thread
 	private void cleanup()
 	{
 		//stuff to tell the squirrles that the room is gone
+		System.err.println("Game: " + name + " - cleanup room");
 		games.remove(this);
 	}
 	
@@ -217,10 +218,15 @@ public class Game extends Thread
 	        lastMove=m;	        
 	    }
         //Iterate to next person
-	    try{
-	        this.players.incrementPlayer();
-	        
-	    }
+	        try
+			{
+				this.players.incrementPlayer();
+			}
+			catch (Exception e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 	}
 
 	/**
@@ -239,8 +245,9 @@ public class Game extends Thread
 	
 	/**
 	 * Distribute deck among all players of game
+	 * @throws Exception 
 	 */
-	private synchronized void distributeDeck(){
+	private synchronized void distributeDeck() throws Exception{
         final int numCards=this.deck.divide(numPlayers);
 	    for (int i=0; i<this.numPlayers; i++){
 	        ArrayList<Card> hand= this.deck.dealCards(numCards);
@@ -296,6 +303,11 @@ public class Game extends Thread
 		catch(InterruptedException e)
 		{
 			//do something... don't know yet
+		}
+		catch (Exception e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		
 		cleanup();
